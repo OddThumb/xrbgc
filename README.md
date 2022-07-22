@@ -15,11 +15,10 @@ In this script, all-parts-combined [CATALOG OF PARAMETERS FOR MILKY WAY GLOBULAR
 ## Installation
 
 ```bash
-# Need to be changed
-tar -xvf ciaoTools.tar
-mv ciaoTools /path/you/want/to/install
-cd /path/you/want/to/install/ciaoTools
-source install_ciaoTools.sh
+unzip xrbgc.zip
+mv xrbgc /path_you_want_to_install
+cd /path_you_want_to_install/xrbgc
+source install_xrbgc.sh
 ```
 
 
@@ -43,7 +42,8 @@ source install_ciaoTools.sh
 ## Usage
 
 ```bash
-xginit
+$ xginit
+$ gcmlmanual
 ```
 
 
