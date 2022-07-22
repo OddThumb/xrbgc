@@ -11,7 +11,7 @@ args <- commandArgs(trailingOnly=TRUE)
 GCCATdir <- system("echo $xrbgc", intern = TRUE)
 IDorNAME <- as.character(args[1])
 
-GCCAT <- read.csv(paste(GCCATdir,"/HarrisCat/Harris_CAT.csv",sep=''))
+GCCAT <- read.csv(paste(GCCATdir,"/HarrisCAT/Harris_CAT.csv",sep=''))
 EBV <- filter(GCCAT, str_detect(ID, regex(IDorNAME, ignore_case=TRUE))|str_detect(Name, regex(IDorNAME, ignore_case=TRUE)))[,"E.B.V."] %>% as.character() %>% as.numeric()
 nH <- (EBV*6.86e21)/1e22
 cat(nH)
