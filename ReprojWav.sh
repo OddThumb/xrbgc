@@ -4,7 +4,7 @@
 #                (0) Input Script Arguments
 # =========================================================
 # Help text
-usage="WCScorr [-h] [-f -r]
+usage="ReprojWav [-h] [-f -r]
 where:
       -h  show this help text
       -f  Flux image directory (default: fluxed)
@@ -37,7 +37,7 @@ done
 # =========================================================
 # Create wavdet_dir
 wavdet_dir=$flux_dir/wavdet
-mkdir wavdet_dir
+mkdir ${wavdet_dir}
 
 # Iterate wavdet over obs_list
 obs_list=()
@@ -46,7 +46,7 @@ for dir in ${dir_list[@]}; do
     dirarr=(${dir//\// })
     obs=${dirarr[1]}
     obs_list[${#obs_list[@]}]=${obs}
-    printf "wavdetect...ing in ObsID: ${obs}\n"
+    printf "wavdetect...ing on ObsID: ${obs}\n"
 
     # Making PSF map
     punlearn mkpsfmap
@@ -72,13 +72,15 @@ done
 # =========================================================
 # Only reference obsid is excluded
 wcs_list=${obs_list[@]/${ref}}
-
+ 
 # Create wcsmatch_dir
 wcsmatch_dir=$flux_dir/wcsmatch
 mkdir ${wcsmatch_dir}
 
 # Iterate wcs_match & wcs_update over wcs_list
 for wcs in ${wcs_list[@]}; do
+    printf "wcs_match...ing on ObsID: ${wcs} with ${ref} as reference\n"
+
     # Generate transformation file by wcs matching 
     punlearn wcs_match
     pset wcs_match infile=${wavdet_dir}/${wcs}_broad.src
@@ -96,28 +98,37 @@ for wcs in ${wcs_list[@]}; do
     pset wcs_update wcsfile=${flux_dir}/${wcs}/broad_thresh.img
     wcs_update mode=h
 
-    # Update evt file
-    dmcopy ${wcs}/repro/*_repro_evt2.fits ${wcsmatch_dir}/${wcs}_corr_evt2.fits
-    punlearn wcs_update
-    pset wcs_update infile=${wcsmatch_dir}/${wcs}_corr_evt2.fits
-    pset wcs_update outfile=
-    pset wcs_update transformfile=${wcsmatch_dir}/${wcs}_out.xform
-    wcs_update mode=h
+#    # Update evt file
+#    dmcopy ${wcs}/repro/*_repro_evt2.fits ${wcsmatch_dir}/${wcs}_corr_evt2.fits
+#    punlearn wcs_update
+#    pset wcs_update infile=${wcsmatch_dir}/${wcs}_corr_evt2.fits
+#    pset wcs_update outfile=
+#    pset wcs_update transformfile=${wcsmatch_dir}/${wcs}_out.xform
+#    wcs_update mode=h
+#
+#    # Update header
+#    dmhedit ${wcsmatch_dir}/${wcs}_corr_evt2.fits file= op=add key=ASOLFILE value=$(realpath ${wcsmatch_dir}/${wcs}_corr_asol1.fits)
 
-    # Update header
-    dmhedit ${wcsmatch_dir}/${wcs}_corr_evt2.fits file= op=add key=ASOLFILE value=${wcsmatch_dir}/${wcs}_corr_asol1.fits
+    # reproject_events
+    punlearn reproject_events
+    pset reproject_events infile=$(/bin/ls ${wcs}/repro/*repro_evt2.fits)
+    pset reproject_events outfile=${wcs}/repro/${wcs}_reproj_evt2.fits
+    pset reproject_events aspect=${wcsmatch_dir}/${wcs}_corr_asol1.fits
+    reproject_events mode=h
 done
+
 
 
 # =========================================================
 #              (3) merge_obs & wavdetect again
 # =========================================================
 # Listing wcs corrected event files
-/bin/ls ${wcsmatch_dir}/*_corr_evt2.fits >> corr_evt2.lis
+/bin/ls ${ref}/repro/*repro_evt2.fits >> reproj.lis
+/bin/ls */repro/*reproj_evt2.fits >> reproj.lis
 
 # merge_obs
 punlearn merge_obs
-merge_obs @corr_evt2.lis merged_half/ binsize=0.5 psfecf=0.9 psfmerge=expmap
+merge_obs @reproj.lis merged_half/ binsize=0.5 psfecf=0.9 psfmerge=expmap
 
 # wavdetect
 mkdir merged_half/wavdet
