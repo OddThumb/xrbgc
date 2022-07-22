@@ -1,0 +1,18 @@
+# Input arguments directory ----
+args = commandArgs(trailingOnly=TRUE)
+data.name <- as.character(args[1])
+label_column <- as.character(args[2])
+if ( is.na(data.name) ) {
+  stop('(Error) At least one argument must be supplied
+        e.g.) $ rTable "data name" "source_type (default)"', call.=FALSE)
+}
+if ( is.na(label_column) ) {
+  label_column <- "source_type"
+}
+
+# Load data
+data <- read.csv(data.name)
+labels <- data[,label_column]
+
+# Print out frequency of class
+print(c(table(labels),'total'=sum(table(labels))))

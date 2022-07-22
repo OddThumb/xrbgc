@@ -1,0 +1,37 @@
+# Input arguments directory ----
+args = commandArgs(trailingOnly=TRUE)
+GCname <- as.character(args[1])
+r_name <- as.character(args[2])
+if (length(args)<2) {
+  stop('(Error) All argument must be supplied
+        e.g.) $ fovregion.R ("GC name") (e.g. "r_c")', call.=FALSE)
+}
+
+
+# Load libraries ----
+package.list <- list("tidyverse", "rlist", "celestial")
+installed <- unlist(lapply(package.list, function(pkg) invisible(suppressMessages(suppressWarnings(require(pkg, character.only=TRUE, quietly=TRUE))))))
+if (!all(installed)) {
+  lapply(package.list[!installed], install.packages, quite=TRUE)
+}
+options(tidyverse.quiet = TRUE)
+invisible(lapply(package.list, function(pkg) suppressMessages(suppressWarnings(require(pkg, character.only=TRUE, quietly=TRUE)))))
+
+
+# Center RA (deg), center Dec (deg), core radii (arcmin), and distance from Sun (kpc) for a given GC name
+GCCAT_dir <- system("echo $xrbgc", intern=TRUE)
+GCCAT <- read.csv(paste(GCCAT_dir,"/Harris_CAT.csv",sep=''))
+RA_cen <- filter(GCCAT, str_detect(ID, regex(GCname, ignore_case=TRUE))|str_detect(Name, regex(GCname, ignore_case=TRUE)))[,"RA"] %>% as.character()
+DEC_cen <- filter(GCCAT, str_detect(ID, regex(GCname, ignore_case=TRUE))|str_detect(Name, regex(GCname, ignore_case=TRUE)))[,"DEC"] %>% as.character()
+radius <- filter(GCCAT, str_detect(ID, regex(GCname, ignore_case=TRUE))|str_detect(Name, regex(GCname, ignore_case=TRUE)))[,r_name] %>% as.character() %>% as.numeric()
+
+
+# Making a region
+HalfLightRegion <- data.frame(c('# Region file format: DS9 version 4.1',
+						'global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1',
+                              'fk5',
+                              paste("circle(",RA_cen,',',DEC_cen,',',radius,"')",sep='')))
+
+# Saving a region
+
+write.table(HalfLightRegion, file=paste('fov-',r_name,'.reg',sep=''), quote = F,sep = '', row.names = F, col.names = F)
