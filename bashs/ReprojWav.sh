@@ -31,7 +31,7 @@ done
 # =========================================================
 #               (0) Run FluxImg with default
 # =========================================================
-source ${xrbgc}/FluxImg.sh
+source ${xrbgc}/bashs/FluxImg.sh
 flux_dir='fluxed'
 
 
