@@ -15,7 +15,6 @@ echo "
    Ref: Fruscione et al.(2006)
  ===============================
 "
-export xrbgc="/Users/in/xrbgc"
 source $xrbgc/gcmlmanual.sh
 
 conda activate ciao
@@ -29,7 +28,7 @@ alias FluxImg="source $xrbgc/bashs/FluxImg.sh"
 alias MergeWav="source $xrbgc/bashs/MergeWav.sh"
 alias ReprojWav="source $xrbgc/bashs/ReprojWav.sh"
 alias Match="Rscript $xrbgc/Rs/Match.R"
-alias Srcflux="source $xrbgc/bashs/srcflux.sh"
+alias Srcflux="source $xrbgc/bashs/Srcflux.sh"
 alias CalcnH="Rscript $xrbgc/Rs/CalcnH.R"
 alias Make="Rscript $xrbgc/Rs/Make.R"
 alias FovRegion="Rscript $xrbgc/Rs/FovRegion.R"
