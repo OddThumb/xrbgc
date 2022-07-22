@@ -4,9 +4,7 @@ For GCML project,
  (1) Repro
  (2) MergeWav
  (or) If multi observation sources are not matched properly,
-     FluxImg
-     WCScorr [-h] -f fluxed(defualt)
-                  -r 10059
+     ReprojWav [-h] -r 10059
  (3) Please MANUALLY prepare a csv file including columns at least these: "ra,dec,source_type"
  (4) Match [-h] -c "info/47Tuc_class.csv"\
                 -t 0.5(default)\

@@ -4,19 +4,15 @@
 #                (0) Input Script Arguments
 # =========================================================
 # Help text
-usage="ReprojWav [-h] [-f -r]
+usage="ReprojWav [-h] [-r]
 where:
       -h  show this help text
-      -f  Flux image directory (default: fluxed)
       -r  Reference ObsID"
 
-flux_dir='fluxed'
-while getopts ":hf:r:" opt; do
+while getopts ":hr:" opt; do
     case $opt in
         h)  echo "$usage"
             exit 0
-            ;;
-        f)  flux_dir="$OPTARG"
             ;;
         r)  ref="$OPTARG"
             ;;
@@ -36,6 +32,7 @@ done
 #               (0) Run FluxImg with default
 # =========================================================
 source ${xrbgc}/FluxImg.sh
+flux_dir='fluxed'
 
 
 # =========================================================
