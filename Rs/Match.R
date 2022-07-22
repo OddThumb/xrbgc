@@ -37,7 +37,7 @@ if (!all(installed)) {
 }
 options(tidyverse.quiet = TRUE)
 invisible(sapply(package.list, function(pkg) suppressMessages(suppressWarnings(require(pkg, character.only=TRUE, quietly=TRUE)))))
-use_condaenv(condaenv = '/Users/in/opt/miniforge3/envs/py39', required = T)
+use_condaenv(condaenv = '/opt/miniconda3/envs/py39', required = T)
 fits <- import("astropy.io.fits", convert = F)
 
 
