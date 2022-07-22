@@ -42,8 +42,6 @@ source install_ciaoTools.sh
 
 ## Usage
 
-------
-
 ```bash
 xginit
 ```
