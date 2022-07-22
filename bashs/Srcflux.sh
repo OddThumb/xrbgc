@@ -78,7 +78,7 @@ esac
 #  (2) Get Hydrogen Column Density from Harris Cat (2010)
 # =========================================================
 # Get nH from Harris GC Catalog
-nH=$(rCalcnH "${IDorNAME}")
+nH=$(CalcnH "${IDorNAME}")
 
 if [ "$nH" == "NA" ];then
   echo "(Error) An extinction value for $IDorNAME does not exist in Harris GC Catalog (2010)..." >&2
