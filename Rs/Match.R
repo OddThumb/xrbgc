@@ -99,6 +99,6 @@ write.csv(srctype, paste(subdirectory,"/matched_sourcetypes_",angular.threshold,
 
 # Write new source fits file ----
 XRBGC_Dir <- system("echo $xrbgc", intern=T)
-source_python(paste(XRBGC_Dir,"/rewriteFITS.py",sep=''))
+source_python(paste(XRBGC_Dir,"/pythons/rewriteFITS.py",sep=''))
 re_writeFITs(srcfitspath, src_list.match_ind, subdirectory, angular.threshold)
 cat('>>> Matched source list fits file is saved in ', subdirectory,"/\n", sep='')
