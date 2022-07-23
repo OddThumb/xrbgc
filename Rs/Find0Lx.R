@@ -11,10 +11,18 @@ parser$add_argument("-m", "--match", type="character",
 args <- parser$parse_args()
 file  <- args$file
 match <- args$match
-label_column <- "source_type"
+
+
+# Check input files
+if ( is.null(file) ) {
+    stop('File is not provided')
+} else if ( is.null(match) ) {
+    stop('matched_sourcetypes_*.csv file is not provided')
+}
 
 
 # Load libraries ----
+options(warn=0)
 options(tidyverse.quiet = TRUE)
 package.list <- list("tidyverse")
 installed <- unlist(lapply(package.list, function(pkg) invisible(suppressMessages(suppressWarnings(require(pkg, character.only=TRUE, quietly=TRUE))))))
@@ -23,15 +31,24 @@ if (!all(installed)) {
 }
 
 
-# data load function
+# Functions ----
+check_installed <- function(packages, install=TRUE) {
+    installed <- unlist(lapply(packages, require, character.only=TRUE))
+    if (!all(installed) & install) {
+        lapply(package.list[!installed], install.packages, repos="https://cran.seoul.go.kr/", quite=TRUE)
+    }
+    lapply(package.list, require, character.only=TRUE)
+}
+
 data_load <- function(file, label_column='source_type') {
-    package.list <- c('tools', 'stringr')
+    package.list <- c('stringr')
     check_installed(package.list)
-    sapply(package.list, require, character.only=TRUE)
+    sapply(package.list, function(pkg) invisible(suppressMessages(suppressWarnings(require(pkg, character.only=TRUE)))))
     
-    if ( file_ext(file)=="csv" ) {
+    if ( tools::file_ext(file)=="csv" ) {
         # Naming
-        name0 <- strsplit(file, "\\_|\\.")[[1]][2]
+        name0 <- strsplit(file, "\\_|\\.")[[1]]
+        name0 <- name0[length(name0)-1]
         letters <- gsub(x = name0, pattern = "[[:digit:]]+", replacement = "")
         numbers <-  gsub(x = name0, pattern = "[^[:digit:]]+", replacement = "")
         letters_loc <- str_locate(name0, letters)
@@ -50,7 +67,8 @@ data_load <- function(file, label_column='source_type') {
         DATA.LIST <- list()
         
         for (l in data.list.file) {
-            name0 <- strsplit(l, "\\_|\\.")[[1]][2]
+            name0 <- strsplit(file, "\\_|\\.")[[1]]
+            name0 <- name0[length(name0)-1]
             letters <- gsub(x = name0, pattern = "[[:digit:]]+", replacement = "")
             numbers <- gsub(x = name0, pattern = "[^[:digit:]]+", replacement = "")
             letters_loc <- str_locate(name0, letters)
@@ -77,7 +95,7 @@ bands <- c('0.3-1.0', '1.0-2.0', '2.0-7.0', '0.3-7.0', '0.5-1.5', '1.5-4.5', '4.
 
 
 # Searching Lx == 0
-indicies <- which(select(data %>% filter(source_type %in% c('CV','MSP')), Lxs) == 0, arr.ind = T)
+indicies <- which(select(data %>% filter(source_type %in% c('CV','MSP')), all_of(Lxs)) == 0, arr.ind = T)
 
 
 # Result
@@ -89,12 +107,19 @@ result <- indicies %>%
     rename('index' = row) %>% 
     select(-col) %>% 
     relocate(band, .after = `dec (deg)`)
-print(result)
 
-
-# write csv for manual flux calculation
-write.csv(result,
-          file = paste(gsub(" ", "", attr(data, 'GC'), fixed = TRUE), '_manualList.csv', sep=''),
-          quote = F)
+if ( nrow(result) == 0 ) {
+    message('There is no any source having 0 Lx for "CV or MSP"')
+    
+} else {
+    print(result)
+    
+    # write csv for manual flux calculation
+    output_name <- paste('ManualList_', gsub(" ", "", unique(select(data, 'GC')), fixed = TRUE), '.csv', sep='')
+    write.csv(result,
+              file = output_name,
+              quote = F)
+    message(output_name, ' is saved in current directory')
+}
 
 
