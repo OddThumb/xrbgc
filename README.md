@@ -51,7 +51,57 @@ source install_xrbgc.sh
 
 ```bash
 $ xginit
+#   
+#    =============================
+# 
+#         xrbgc (beta 0.6.9)
+# 
+#      > Author: Sang In Kim
+#      > Date: 17 July 2022
+# 
+#    "Wrapper scripts for CIAO"
+# 
+#    CIAO  version: 4.14
+#    ciao_contrib : 4.14.2
+#    CALDB version: 4.9.8
+# 
+#    Ref: Fruscione et al.(2006)
+#  ===============================
+# 
+# 
+# For GCML project,
+#  (0) Download data
+#  (1) Repro
+#  (2) MergeWav
+#  (or) If multi observation sources are not matched properly,
+#      ReprojWav [-h] -r 10059
+#  (3) Please MANUALLY prepare a csv file including columns at least these: "ra,dec,source_type"
+#  (4) Match [-h] -c "info/47Tuc_class.csv"\
+#                 -t 0.5(default)\
+#                 -w "merged_half/wavdet/source_list.fits"(default)
+#  (5) Srcflux [-h] -n "GC Name"\
+#                   -p 0(default)
+#  (6) Make [-h] -n "47 Tuc"\
+#                -f "fluxes_xspowerlaw.p1/"(default)\
+#                -v T(default)
+
 $ gcmlmanual
+
+# For GCML project,
+#  (0) Download data
+#  (1) Repro
+#  (2) MergeWav
+#  (or) If multi observation sources are not matched properly,
+#      ReprojWav [-h] -r 10059
+#  (3) Please MANUALLY prepare a csv file including columns at least these: "ra,dec,source_type"
+#  (4) Match [-h] -c "info/47Tuc_class.csv"\
+#                 -t 0.5(default)\
+#                 -w "merged_half/wavdet/source_list.fits"(default)
+#  (5) Srcflux [-h] -n "GC Name"\
+#                   -p 0(default)
+#  (6) Make [-h] -n "47 Tuc"\
+#                -f "fluxes_xspowerlaw.p1/"(default)\
+#                -v T(default)
 ```
 
 
