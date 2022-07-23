@@ -15,9 +15,17 @@ In this script, all-parts-combined [CATALOG OF PARAMETERS FOR MILKY WAY GLOBULAR
 ## Installation
 
 ```bash
-unzip xrbgc.zip
+# UNZIP
+unzip xrbgc-main.zip
+
+# RENAME
+mv xrbgc-main xrbgc
+
+# MOVE
 mv xrbgc /path_you_want_to_install
 cd /path_you_want_to_install/xrbgc
+
+# INSTALL
 source install_xrbgc.sh
 ```
 
