@@ -1,5 +1,4 @@
 # Input arguments directory ----
-# Input arguments directory ----
 if (!suppressMessages(suppressWarnings(require('argparse', character.only=TRUE, quietly=TRUE)))) {
   install.packages('argparse')
 }
@@ -37,7 +36,8 @@ if (!all(installed)) {
 }
 options(tidyverse.quiet = TRUE)
 invisible(sapply(package.list, function(pkg) suppressMessages(suppressWarnings(require(pkg, character.only=TRUE, quietly=TRUE)))))
-use_condaenv(condaenv = '/opt/miniconda3/envs/py39', required = T)
+condaenv <- system('source ${xrbgc}/bashs/FindConda.sh', intern=T)
+use_condaenv(condaenv = condaenv, required = T)
 fits <- import("astropy.io.fits", convert = F)
 
 
