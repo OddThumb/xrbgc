@@ -414,7 +414,7 @@ missingParam <- function(GCname, param) {
 main <- function(GCname, fluxdir, vary, label_column) {
   # Searching parameters in Harris catalog (2010)
   GCCAT_dir <- system("echo $xrbgc", intern=TRUE)
-  GCCAT <- read.csv(paste(GCCAT_dir,"/Harris_CAT.csv",sep=''))
+  GCCAT <- read.csv(paste(GCCAT_dir,"/HarrisCAT/Harris_CAT.csv",sep=''))
   
   # Logical condition that matching given GCname and one in Harris catalog (2010)
   condition <- str_detect(GCCAT$ID, regex(GCname, ignore_case=TRUE))|str_detect(GCCAT$Name, regex(GCname, ignore_case=TRUE))
