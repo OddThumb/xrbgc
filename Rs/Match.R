@@ -36,9 +36,18 @@ if (!all(installed)) {
 }
 options(tidyverse.quiet = TRUE)
 invisible(sapply(package.list, function(pkg) suppressMessages(suppressWarnings(require(pkg, character.only=TRUE, quietly=TRUE)))))
+
+
+# Load conda envrionment ----
 condaenv <- system('source ${xrbgc}/bashs/FindConda.sh', intern=T)
-use_condaenv(condaenv = condaenv, required = T)
-fits <- import("astropy.io.fits", convert = F)
+if ( condaenv == 'ERROR1' ) {
+    stop('ERROR) conda not found')
+} else if ( condaenv == 'ERROR2' ) {
+    stop('ERROR) astropy not found in any conda environment')
+} else {
+    use_condaenv(condaenv = condaenv, required = T)
+    fits <- import("astropy.io.fits", convert = F)
+}
 
 
 # Create ouput directory ----

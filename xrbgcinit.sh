@@ -1,7 +1,7 @@
 echo "
   =============================
 
-        xrbgc (beta 0.6.8)
+        xrbgc (beta 0.6.9)
 
      > Author: Sang In Kim
      > Date: 17 July 2022
