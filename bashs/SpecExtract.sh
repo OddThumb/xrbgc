@@ -100,7 +100,7 @@ for i in `seq 0 $((${#evt2_list[@]}-1))`; do
   "
         
         # Extract source with region
-        dmcopy "${evt2}[sky=region(${src_reg})]" "spec/Obs${obsid}_${reg_ind}.fits" verbose=0
+        dmcopy "${evt2}[sky=region(${src_reg})]" "spec/Obs${obsid}_src${reg_ind}.fits" verbose=0
         
         punlearn ardlib
         acis_set_ardlib ${bpix} verbose=0
@@ -108,7 +108,7 @@ for i in `seq 0 $((${#evt2_list[@]}-1))`; do
         # specextract
         punlearn specextract
         specextract infile="${evt2}[sky=region(${src_reg})]" \
-                    outroot="spec/Obs${obsid}_${reg_ind}" \
+                    outroot="spec/Obs${obsid}_src${reg_ind}" \
                     bkgfile="${evt2}[sky=region(${bkg_reg})]" \
                     asp=${asol} mskfile=${mask} badpixfile=${bpix} \
                     weight=no correct=no \
