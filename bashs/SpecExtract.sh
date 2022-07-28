@@ -93,10 +93,11 @@ for i in `seq 0 $((${#evt2_list[@]}-1))`; do
         reg_ind=(${reg_ind1[0]//src/ })
 
         echo "Extracting spectrum
-  | ObsID: $obsid, \
-  | $(($i+1))-th source: ${evt2} \
-  | $(($j+1))-th region: $src_reg \
-  | background region: $bkg_reg"
+  | ObsID: $obsid
+  | $(($i+1))-th source: ${evt2}
+  | $(($j+1))-th region: $src_reg
+  | background:  $bkg_reg
+  "
         
         # Extract source with region
         dmcopy "${evt2}[sky=region(${src_reg})]" "spec/Obs${obsid}_${reg_ind}.fits" verbose=0
