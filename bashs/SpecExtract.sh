@@ -115,13 +115,16 @@ for i in `seq 0 $((${#evt2_list[@]}-1))`; do
     
     for j in `seq 0 $((${#src_list[@]}-1))`; do
         src_reg=${src_list[$j]}
-        
+        reg_ind0=(${src_reg//\// })
+        reg_ind1=(${reg_ind0[1]//./ })
+        reg_ind=(${reg_ind1[0]//src/ })
+
         echo "Extracting spectrum in ObsID: $obsid, \
 $(($i+1))-th source with $(($j+1))-th source region ($src_reg) \
 and background region ($bkg_reg)"
         
         # Extract source with region
-        dmcopy "${evt2}[sky=region(${src_reg})]" "spec/Obs${obsid}_${j}.fits" verbose=0
+        dmcopy "${evt2}[sky=region(${src_reg})]" "spec/Obs${obsid}_${reg_ind}.fits" verbose=0
         
         punlearn ardlib
         acis_set_ardlib ${bpix} verbose=0
@@ -129,7 +132,7 @@ and background region ($bkg_reg)"
         # specextract
         punlearn specextract
         specextract infile="${evt2}[sky=region(${src_reg})]" \
-                    outroot="spec/Obs${obsid}_${j}" \
+                    outroot="spec/Obs${obsid}_${reg_ind}" \
                     bkgfile="${evt2}[sky=region(${bkg_reg})]" \
                     asp=${asol} mskfile=${mask} badpixfile=${bpix} \
                     weight=no correct=no \
