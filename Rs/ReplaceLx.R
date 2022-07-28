@@ -4,20 +4,25 @@ if (!suppressMessages(suppressWarnings(require('argparse', character.only=TRUE, 
 }
 suppressMessages(suppressWarnings(require(argparse, quietly=TRUE)))
 parser <- ArgumentParser()
+parser$add_argument("-n", "--GCname", type="character",
+                    help="GC name with white space")
 parser$add_argument("-f", "--file", type="character",
                     help="A path of csv file")
-parser$add_argument("-m", "--match", type="character",
-                    help="A path of matched_sourcetypes_*.csv file")
+parser$add_argument("-m", "--manlist", type="character",
+                    help="A path of ManualList_*.csv file")
 args <- parser$parse_args()
-file  <- args$file
-match <- args$match
+GCname  <- args$GCname
+file    <- args$file
+manlist <- args$manlist
 
 
 # Check input files
-if ( is.null(file) ) {
+if ( is.null(GCname) ) {
+    stop('GC name need to be given for R_Sun value in Harris CAT (2010)')
+} else if ( is.null(file) ) {
     stop('File is not provided')
-} else if ( is.null(match) ) {
-    stop('matched_sourcetypes_*.csv file is not provided')
+} else if ( is.null(manlist) ) {
+    stop('ManualList_*.csv file is not provided')
 }
 
 
@@ -84,42 +89,72 @@ data_load <- function(file, label_column='source_type') {
 }
 
 
-# Load data
-data  <- data_load(file)
-radec <- read.csv(match)
-
-
-# Define Lx columns and their bands
-Lxs <- paste('L_', seq(8), sep='')
-bands <- c('0.3-1.0', '1.0-2.0', '2.0-7.0', '0.3-7.0', '0.5-1.5', '1.5-4.5', '4.5-6.0', '0.5-6.0')
-
-
-# Searching Lx == 0
-indicies <- which(select(data, all_of(Lxs)) == 0, arr.ind = T)
-
-
-# Result
-result <- indicies %>% 
-    as.data.frame() %>% 
-    mutate(band = bands[col]) %>% 
-    mutate('ra'  = radec[row,'RA']) %>%
-    mutate('dec' = radec[row, 'DEC']) %>%
-    rename('index' = row) %>% 
-    select(-col) %>% 
-    relocate(band, .after = 'dec')
-
-if ( nrow(result) == 0 ) {
-    message('There is no any source having 0 Lx')
+getValHarris <- function(GCname, col) {
+    GCCAT <- read.csv(paste("~/xrbgc/HarrisCAT/Harris_CAT.csv",sep=''))
     
-} else {
-    print(result)
+    # Logical condition that matching given GCname and one in Harris catalog (2010)
+    condition <- str_detect(GCCAT$ID, regex(GCname, ignore_case=TRUE))|str_detect(GCCAT$Name, regex(GCname, ignore_case=TRUE))
+    if ( !any(condition) ) {
+        stop("(Error) There is no ",GCname," in Harris catalog (2010)")
+    }
     
-    # write csv for manual flux calculation
-    output_name <- paste('ManualList_', gsub(" ", "", unique(select(data, 'GC')), fixed = TRUE), '.csv', sep='')
-    write.csv(result,
-              file = output_name,
-              quote = F)
-    message(output_name, ' is saved in current directory')
+    # value
+    val  <- filter(GCCAT, condition)[,col] %>% as.character() %>% as.numeric()
+    
+    return(val)
 }
+
+
+flux2Lx <- function(flux, GCname) {
+    onePCinCM <- 3.086e+18
+    R_Sun <- getValHarris(GCname, 'R_Sun')
+    L <- flux * 4*pi * ( 1e3*R_Sun * onePCinCM )^2 # R_sun in kpc
+    return(L)
+}
+
+
+# Load data
+data   <- data_load(file)
+mantab <- read.csv(manlist) %>% `colnames<-`(c('X','index','ra','dec','band'))
+
+
+# Pairing between Lx column number and the corresponding band
+bandinfo <- c('0.3-1.0'=1,'1.0-2.0'=2,'2.0-7.0'=3,'0.3-7.0'=4,
+              '0.5-1.5'=5,'1.5-4.5'=6,'4.5-6.0'=7,'0.5-6.0'=8)
+
+
+# Replacing
+data.copy <- data
+for ( i in seq(nrow(mantab)) ) {
+    # Info from ManualList_*.csv
+    row.id <- mantab[i,'index']
+    band   <- mantab[i,'band']
+    
+    # Message
+    message("For ", row.id, '-th source with band ', band, ', lumonosity value is changed')
+    
+    # Flux Data ({GCname}_flux_{band}.csv)
+    flux <- read.csv(paste('spec/',gsub(" ", "",GCname),'_flux_',band,'.csv',sep=''))
+    
+    # Replacing
+    data.copy[row.id, paste('L_', bandinfo[[band]], sep='')]        <- flux2Lx(flux %>% filter(X == row.id) %>% select('uF_X'), GCname)[[1]]
+    data.copy[row.id, paste('L_', bandinfo[[band]], '_lo', sep='')] <- flux2Lx(flux %>% filter(X == row.id) %>% select('uF_X_lo'), GCname)[[1]]
+    data.copy[row.id, paste('L_', bandinfo[[band]], '_hi', sep='')] <- flux2Lx(flux %>% filter(X == row.id) %>% select('uF_X_hi'), GCname)[[1]]
+}
+message('Total ', i, ' sources have been editted' )
+
+# Re-calculate colors
+data.repl <- data.copy %>%
+    mutate( color1 = log10( L_1 / L_5 ) ) %>% 
+    mutate( color2 = log10( L_8 / L_2 ) ) %>%
+    mutate( color3 = log10( L_4 / L_7 ) )
+
+
+# write csv for manual flux calculation
+output_name <- paste('DataSet_', gsub(" ", "", unique(select(data, 'GC')), fixed = TRUE), '_Repl.csv', sep='')
+write.csv(data.repl,
+          file = output_name,
+          quote = F, row.names = F)
+message(output_name, ' is saved in current directory')
 
 

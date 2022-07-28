@@ -1,15 +1,16 @@
 import argparse
-import os, glob, re
+import os, glob, re, subprocess
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from subprocess import Popen, PIPE
 from fnmatch import translate
 from sherpa.astro.ui import *
 
 
 # Arguments setting
 parser = argparse.ArgumentParser(description='spectral fitting with sherpa')
-parser.add_argument('-a', '--absnh', type=float, help='absorption of neutral hydrogen column density (nh)')
+parser.add_argument('-n', '--GCname', help='GC name with white space')
 parser.add_argument('-m', '--model', default='xspowerlaw.pl',
                     help='''spectral fitting model
     power-law: "xspowerlaw.pl"
@@ -23,10 +24,16 @@ parser.add_argument('-p', '--param', default='pl.phoindex=1.7;pl.norm=1e-5',
 parser.add_argument('-b', '--band', default="0.5-6.0",
                     help='energy band to calculate flux. e.g.) "0.5-6.0" (default)')
 args = parser.parse_args()
-absnh = args.absnh
-model = args.model
-param = args.param
-band = args.band
+GCname = args.GCname
+model  = args.model
+param  = args.param
+band   = args.band
+
+
+# Get nH value
+CalcnH_run = Popen("Rscript ${xrbgc}/Rs/CalcnH.R \'"+GCname+"\'", shell=True, stdout=PIPE)
+CalcnH_return, _ = CalcnH_run.communicate()
+absnh = CalcnH_return.decode("utf-8")
 
 
 # Decode energy band
@@ -95,7 +102,7 @@ for i, pi1reg in enumerate(pi_per_reg):
     # Fitted plot
     plt.figure(figsize=(10,8))
     plot_fit_delchi(xlog=True, ylog=True)
-    plt.savefig("Region"+reglist[i]+band+"_fitfig.ps",format="eps") 
+    plt.savefig("Region"+reglist[i]+"_"+band+"_fitfig.ps",format="eps") 
 
     # Computing flux
     print("\nCalculating fluxes for region "+reglist[i])

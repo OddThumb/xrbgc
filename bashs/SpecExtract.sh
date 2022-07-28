@@ -1,34 +1,6 @@
 #!/bin/bash
 
 # =========================================================
-#                (0) Input Script Arguments
-# =========================================================
-# Help text
-usage="SpecExtract [-h] [-n -r]
-where:
-      -h  show this help text
-      -r  Background region file path"
-
-while getopts ":hr:" opt; do
-    case $opt in
-        h)  echo "$usage"
-            exit 0
-            ;;
-        r)  bkg_reg="$OPTARG"
-            ;;
-        :)  printf "missing argument for -%s\n" "$OPTARG" >&2
-            echo "$usage" >&2
-            exit 1
-            ;;
-        \?) printf "illegal option: -%s\n" "$OPTARG" >&2
-            echo "$usage" >&2
-            exit 1
-            ;;
-    esac
-done
-
-
-# =========================================================
 #                     (1) Input files
 # =========================================================
 # List files for multiple observation
@@ -84,6 +56,7 @@ if [ ${#src_list[@]} -eq 0 ]; then
 else
     echo "There are ${#src_list[@]} source regions for spectrum extraction: ${src_list}"
 fi
+bkg_reg=info/bkg.reg
 if [ -f ${bkg_reg} ]; then
     echo "${bkg_reg} will be used for background spectrum"
 else
@@ -119,9 +92,11 @@ for i in `seq 0 $((${#evt2_list[@]}-1))`; do
         reg_ind1=(${reg_ind0[1]//./ })
         reg_ind=(${reg_ind1[0]//src/ })
 
-        echo "Extracting spectrum in ObsID: $obsid, \
-$(($i+1))-th source with $(($j+1))-th source region ($src_reg) \
-and background region ($bkg_reg)"
+        echo "Extracting spectrum
+  | ObsID: $obsid, \
+  | $(($i+1))-th source: ${evt2} \
+  | $(($j+1))-th region: $src_reg \
+  | background region: $bkg_reg"
         
         # Extract source with region
         dmcopy "${evt2}[sky=region(${src_reg})]" "spec/Obs${obsid}_${reg_ind}.fits" verbose=0
