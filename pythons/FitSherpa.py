@@ -1,5 +1,5 @@
 import argparse
-import glob, re
+import os, glob, re
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -95,18 +95,20 @@ for i, pi1reg in enumerate(pi_per_reg):
     # Fitted plot
     plt.figure(figsize=(10,8))
     plot_fit_delchi(xlog=True, ylog=True)
-    plt.savefig("Region"+reglist[i]+"_figfig.ps",format="eps") 
+    plt.savefig("Region"+reglist[i]+band+"_fitfig.ps",format="eps") 
 
     # Computing flux
     print("\nCalculating fluxes for region "+reglist[i])
     flux, uflux, _ = sample_flux(modelcomponent=pl, lo=en_lo, hi=en_hi,
-                                    num=1000, numcores=8, confidence=90)
-    flux_df.iloc[0] = [flux[0],  flux[0]  - flux[2],  flux[1]  - flux[0],
+                                 num=1000, numcores=8, confidence=90)
+    flux_df.iloc[i] = [flux[0],  flux[0]  - flux[2],  flux[1]  - flux[0],
                        uflux[0], uflux[0] - uflux[2], uflux[1] - uflux[0]]
 
-    show_all(outfile="Region"+reglist[i]+"_fitres.txt", clobber=True)
+    show_all(outfile="Region"+reglist[i]+"_"+band+"_fitres.txt", clobber=True)
+    
+    clean()
 
 
 # Save flux data frame to csv file
 prefix = os.path.dirname( os.getcwd() ).split('/')[-1]
-flux_df.to_csv(prefix+'_flux.csv')
+flux_df.to_csv(prefix+'_flux_'+band+'.csv')
