@@ -1,7 +1,7 @@
 echo "
   =============================
 
-        xrbgc (beta 0.6.9)
+        xrbgc (beta 0.7.0)
 
      > Author: Sang In Kim
      > Date: 17 July 2022
@@ -21,7 +21,7 @@ conda activate ciao
 
 alias gcmlmanual="source $xrbgc/gcmlmanual.sh"
 alias SpecExtract="source $xrbgc/bashs/SpecExtract.sh"
-alias SpecFitting="source $xrbgc/bashs/SpecFitting.sh"
+alias FitSherpa="source $xrbgc/pythons/FitSherpa.py"
 alias BandSplit="source $xrbgc/bashs/BandSplit.sh"
 alias Repro="source $xrbgc/bashs/Reprocessing.sh"
 alias FluxImg="source $xrbgc/bashs/FluxImg.sh"
