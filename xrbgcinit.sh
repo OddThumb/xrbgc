@@ -21,7 +21,7 @@ conda activate ciao
 
 alias gcmlmanual="source $xrbgc/gcmlmanual.sh"
 alias SpecExtract="source $xrbgc/bashs/SpecExtract.sh"
-alias FitSherpa="source $xrbgc/pythons/FitSherpa.py"
+alias FitSherpa="python $xrbgc/pythons/FitSherpa.py"
 alias BandSplit="source $xrbgc/bashs/BandSplit.sh"
 alias Repro="source $xrbgc/bashs/Reprocessing.sh"
 alias FluxImg="source $xrbgc/bashs/FluxImg.sh"
