@@ -1,274 +1,144 @@
-#############################################################
-#                                                           #
-#  SpecExtract.sh (Ver 1.2)                                 #
-#  ------------------------------------------------------   #
-#  Spectrum extraction right after "chandra_repro" !        #    
-#                                                           #
-#  * Pre-requisites: ./regions/                             #
-#                    ./regions/(source region files),       #
-#                              (background region file)     #
-#  * Run this outside ObsID directory                       #
-#  ------------------------------------------------------   #
-#                                                           #
-#############################################################
+#!/bin/bash
+
+# =========================================================
+#                (0) Input Script Arguments
+# =========================================================
+# Help text
+usage="SpecExtract [-h] [-n -r]
+where:
+      -h  show this help text
+      -r  Background region file path"
+
+while getopts ":hr:" opt; do
+    case $opt in
+        h)  echo "$usage"
+            exit 0
+            ;;
+        r)  bkg_reg="$OPTARG"
+            ;;
+        :)  printf "missing argument for -%s\n" "$OPTARG" >&2
+            echo "$usage" >&2
+            exit 1
+            ;;
+        \?) printf "illegal option: -%s\n" "$OPTARG" >&2
+            echo "$usage" >&2
+            exit 1
+            ;;
+    esac
+done
 
 
-# Initailze HEASOFT and CIAO
-heainit              # HEASOFT 
-ciao -o &>/dev/null  # CIAO
-
-echo "
->>> HEASOFT and CIAO are initialized!"
-
-
-#=========================== Setting and Checking =================================
-# Start from outside of ObsID directory
-rootdir=$(pwd)
-
-
-# Check an argument OR input dir name
-if [ $# -eq 0 ]; then
-    read -p ">>> What is 'indir' to extract spectrum? (e.g. ObsID, all) " obsdir
-    if [ $obsdir == 'all' ]; then
-        lis0=($(find . -name secondary))
-        obslis=()
-        for li in ${lis0[*]}; do
-            li2=(${li//\// })
-            li3=${li2[1]}
-            echo $li3
-            obslis+=($li3)
-        done
-        
-        for dir in ${obslis[*]}; do
-            if [ ! -d $dir ]; then
-                echo "(error) No such directory exists: $dir/"
-                return
-            fi
-        done
-    else
-        if [ ! -d $obsdir ]; then
-            echo "(error) No such directory exists: $obsdir/"
-            return
-        fi
-    fi
+# =========================================================
+#                     (1) Input files
+# =========================================================
+# List files for multiple observation
+if [ -f evt2.lis ]; then
+    echo "evt2.lis file already exists"
+    evt2_list=($(cat evt2.lis))
 else
-    obsdir="$1" # For a given first argument
-    if [ $obsdir == 'all' ]; then
-        lis0=($(find . -name secondary))
-        obslis=()
-        for li in ${lis0[*]}; do
-            li2=(${li//\// })
-            li3=${li2[1]}
-            echo $li3
-            obslis+=($li3)
-        done
+    /bin/ls */repro/*evt2.fits >> evt2.lis
+    evt2_list=($(cat evt2.lis))
+fi
+if [ -f bpix1.lis ]; then
+    echo "bpix1.lis file already exists"
+    bpix_list=($(cat bpix1.lis))
+else
+    /bin/ls */repro/*repro_bpix1.fits >> bpix1.lis
+    bpix_list=($(cat bpix1.lis))
+fi
+if [ -f asol1.lis ]; then
+    echo "asol1.lis file already exists"
+    asol_list=($(cat asol1.lis))
+else
+    /bin/ls */repro/*asol1.fits >> asol1.lis
+    asol_list=($(cat asol1.lis))
+fi
+if [ -f msk1.lis ]; then
+    echo "msk1.lis file already exists"
+    mask_list=($(cat msk1.lis))
+else
+    /bin/ls */repro/*msk1.fits >> msk1.lis
+    mask_list=($(cat msk1.lis))
+fi
 
-        for dir in ${obslis[*]}; do
-            if [ ! -d $dir ]; then
-                echo "(error) No such directory exists: $dir/"
-                return
-            fi
-        done
-    else
-        if [ ! -d $obsdir ]; then
-            echo "(error) No such directory exists: $obsdir/"
-            return
-        fi
-    fi
+# File number check
+if [[ ${#evt2_list[@]} -eq ${#bpix_list[@]} ]] && \
+   [[ ${#evt2_list[@]} -eq ${#asol_list[@]} ]] && \
+   [[ ${#evt2_list[@]} -eq ${#mask_list[@]} ]]; then
+    echo ""
+else
+    echo "Wrong number of files are given"
+    exit 1
+fi
+
+# Source regions
+if [ -f src.lis ]; then
+    echo "src.lis file already exists"
+else
+    /bin/ls info/src*.reg >> src.lis
+    src_list=($(cat src.lis))
+fi
+if [ ${#src_list[@]} -eq 0 ]; then
+    echo "Source regions not found in the directory: info/"
+    exit 1
+else
+    echo "There are ${#src_list[@]} source regions for spectrum extraction: ${src_list}"
+fi
+if [ -f ${bkg_reg} ]; then
+    echo "${bkg_reg} will be used for background spectrum"
+else
+    echo "${bkg_reg} not found"
+    exit 1
 fi
 
 
-# Check regions directory in rootdir
-if [ ! -d "regions" ]; then
-    echo "(error) No regions directory in $rootdir/"
-    return
-else
-    # Check a file name of the background region (default: bkg.reg)
-    read -p ">>> Background region name (default: bkg.reg): " bkg_reg
-    bkg_reg=${bkg_reg:-bkg.reg}
-    
-    if [ ! -f "$rootdir/regions/$bkg_reg" ]; then
-        echo "(error) No such file exists in directory ($rootdir/regions/): $bkg_reg"
-        return
-    fi
+# =========================================================
+#                     (2) Specextract
+# =========================================================
+spec_dir=spec
+mkdir ${spec_dir}
 
-    echo ">>> Following regions are found in $rootdir/regions/"
-    region_list=($(ls ./regions | grep -v "$bkg_reg"))
-    echo "  |For sources:  ${region_list[*]}"
-    echo "  |and for a background:  $bkg_reg"
-fi
-
-
-if [ $obsdir == 'all' ]; then
-    total_iter=$(python -c "print(${#obslis[*]}*${#region_list[*]})")
-    iter=1
-    for dir in ${obslis[*]}; do
-        # Check repro/ directory in rootdir/dir/
-
-        cd $dir                                     
-        if [ ! -d "repro" ]; then
-            echo "(error) No such directory in $rootdir/$dir/: (repro/)"
-            cd $rootdir
-            return
-        fi
-        
-        
-        # Create spec/ directory in rootdir/dir/
-        mkdir -v spec
-        
-        
-        # Assign input files from repro/
-        if ls ./repro/*evt2* 1> /dev/null 2>&1 ; then
-            evtfile="$rootdir/$dir/repro/$(ls ./repro/ | grep 'evt2')"
-        else
-            echo "(error) No event file exists in directory ($rootdir/$dir/repro/)"
-            cd $rootdir
-            return
-        fi
-        if ls ./repro/*repro_bpix1* 1> /dev/null 2>&1 ; then
-            bpxfile="$rootdir/$dir/repro/$(ls ./repro/ | grep 'repro_bpix1')"
-        else
-            echo "(error) No bad pixel file exists in directory ($rootdir/$dir/repro/)"
-            cd $rootdir
-            return
-        fi
-        if ls ./repro/*asol1.fits 1> /dev/null 2>&1 ; then 
-            aspfile="$rootdir/$dir/repro/$(ls ./repro/ | grep 'asol1.fits')"
-        else
-            echo "(error) No asol file exists in directory ($rootdir/$dir/repro/)"
-            cd $rootdir
-            return
-        fi
-        if ls ./repro/*msk1* 1> /dev/null 2>&1 ; then
-            mskfile="$rootdir/$dir/repro/$(ls ./repro/ | grep 'msk1')"
-        else
-            echo "(error) No mask file exists in directory ($rootdir/$dir/repro/)"
-            cd $rootdir
-            return
-        fi    
-        echo ">>> Following files are found in directory ($rootdir/$dir/repro/)
-     |event file: $evtfile
-     |bad pixel : $bpxfile
-     |asol file : $aspfile
-     |mask file : $mskfile"
-        #==================================================================================
-        
-        
-        #================ Run specextract (CIAO) for the region list ======================
-        echo ">>> Running specextract (CIAO)... for ${region_list[*]}"
-        
-        for src_reg in ${region_list[*]}; do
-            outname=(${src_reg//./ })
-            mkdir $rootdir/$dir/spec/${outname[0]}
-        
-            dmcopy "$evtfile[sky=region($rootdir/regions/${src_reg})]" $rootdir/$dir/spec/${outname[0]}/source_${outname[0]}.fits verbose=0
-            
-            punlearn ardlib
-            acis_set_ardlib $bpxfile verbose=0
-            
-            printf " Spectrum Extracting... ( $iter / $total_iter )"
-            punlearn specextract
-            specextract infile="$evtfile[sky=region($rootdir/regions/${src_reg})]"\
-                        outroot="$rootdir/$dir/spec/${outname[0]}/${outname[0]}"\
-                        bkgfile="$evtfile[sky=region($rootdir/regions/${bkg_reg})]"\
-                        asp="$aspfile"\
-                        mskfile="$mskfile"\
-                        badpixfile="$bpxfile"\
-                        weight=no correct=no\
-                        grouptype=NONE binspec=NONE\
-                        verbose=0 clobber=yes
-
-            iter=$(($iter + 1))
-        cd $rootdir
-
-        done
-    done
-        #==================================================================================
-else
-    # Check repro/ directory in rootdir/obsdir/
-    cd $obsdir                                     
-    if [ ! -d "repro" ]; then
-        echo "(error) No such directory in $rootdir/$obsdir/: (repro/)"
-        cd $rootdir
-        return
-    fi
+# Iterate over evt2 and src_list
+for i in `seq 0 $((${#evt2_list[@]}-1))`; do
+    # Input files
+    evt2=${evt2_list[$i]}
+    bpix=${bpix_list[$i]}
+    asol=${asol_list[$i]}
+    mask=${mask_list[$i]}
     
+    # Extracting obsid from evt2 file name
+    filename0=(${evt2//\// })
+    filename1=${filename0[$((${#filename0[@]}-1))]}
+    filename2=(${filename1//_/ })
+    filename=${filename2[0]}
+    obsid=${filename//acisf/}
     
-    # Create spec/ directory in rootdir/obsdir/
-    mkdir -v spec
-    
-    
-    # Assign input files from repro/
-    if ls ./repro/*evt2* 1> /dev/null 2>&1 ; then
-        evtfile="$rootdir/$obsdir/repro/$(ls ./repro/ | grep 'evt2')"
-    else
-        echo "(error) No event file exists in directory ($rootdir/$obsdir/repro/)"
-        cd $rootdir
-        return
-    fi
-    if ls ./repro/*repro_bpix1* 1> /dev/null 2>&1 ; then
-        bpxfile="$rootdir/$obsdir/repro/$(ls ./repro/ | grep 'repro_bpix1')"
-    else
-        echo "(error) No bad pixel file exists in directory ($rootdir/$obsdir/repro/)"
-        cd $rootdir
-        return
-    fi
-    if ls ./repro/*asol1.fits 1> /dev/null 2>&1 ; then 
-        aspfile="$rootdir/$obsdir/repro/$(ls ./repro/ | grep 'asol1.fits')"
-    else
-        echo "(error) No asol file exists in directory ($rootdir/$obsdir/repro/)"
-        cd $rootdir
-        return
-    fi
-    if ls ./repro/*msk1* 1> /dev/null 2>&1 ; then
-        mskfile="$rootdir/$obsdir/repro/$(ls ./repro/ | grep 'msk1')"
-    else
-        echo "(error) No mask file exists in directory ($rootdir/$obsdir/repro/)"
-        cd $rootdir
-        return
-    fi    
-    echo ">>> Following files are found in directory ($rootdir/$obsdir/repro/)
-     |event file: $evtfile
-     |bad pixel : $bpxfile
-     |asol file : $aspfile
-     |mask file : $mskfile"
-    #==================================================================================
-    
-    
-    #================ Run specextract (CIAO) for the region list ======================
-    echo ">>> Running specextract (CIAO)... for ${region_list[*]}"
-    
-    for src_reg in ${region_list[*]}; do
-        outname=(${src_reg//./ })
-        mkdir $rootdir/$obsdir/spec/${outname[0]}
-    
-        dmcopy "$evtfile[sky=region($rootdir/regions/${src_reg})]" $rootdir/$obsdir/spec/${outname[0]}/source_${outname[0]}.fits verbose=0
+    for j in `seq 0 $((${#src_list[@]}-1))`; do
+        src_reg=${src_list[$j]}
+        
+        echo "Extracting spectrum in ObsID: $obsid, \
+$(($i+1))-th source with $(($j+1))-th source region ($src_reg) \
+and background region ($bkg_reg)"
+        
+        # Extract source with region
+        dmcopy "${evt2}[sky=region(${src_reg})]" "spec/Obs${obsid}_${j}.fits" verbose=0
         
         punlearn ardlib
-        acis_set_ardlib $bpxfile verbose=0
-    
+        acis_set_ardlib ${bpix} verbose=0
+        
+        # specextract
         punlearn specextract
-        specextract infile="$evtfile[sky=region($rootdir/regions/${src_reg})]"\
-                    outroot="$rootdir/$obsdir/spec/${outname[0]}/${outname[0]}"\
-                    bkgfile="$evtfile[sky=region($rootdir/regions/${bkg_reg})]"\
-                    asp="$aspfile"\
-                    mskfile="$mskfile"\
-                    badpixfile="$bpxfile"\
-                    weight=no correct=no\
-                    grouptype=NONE binspec=NONE\
-                    verbose=0 clobber=yes
-    
+        specextract infile="${evt2}[sky=region(${src_reg})]" \
+                    outroot="spec/Obs${obsid}_${j}" \
+                    bkgfile="${evt2}[sky=region(${bkg_reg})]" \
+                    asp=${asol} mskfile=${mask} badpixfile=${bpix} \
+                    weight=no correct=no \
+                    grouptype=NONE binspec=NONE \
+                    verbose=1 clobber=yes
     done
-    #==================================================================================
-fi
- 
-echo "
->>> For ${region_list[*]},
-    Source spectrum is extracted!"
+done
 
-read -p "Wanna go back to $rootdir? (default:y) > " GO
-GO=${GO:-y}
-case $GO in
-    [Yy]* ) cd $rootdir; pwd; ls;;
-    [Nn]* ) pwd; ls;;
-esac
+
+# Organizing *.lis files
+mkdir spec/listfiles
+mv *.lis spec/listfiles
