@@ -88,7 +88,6 @@ data_load <- function(file, label_column='source_type') {
     }
 }
 
-
 getValHarris <- function(GCname, col) {
     GCCAT <- read.csv(paste("~/xrbgc/HarrisCAT/Harris_CAT.csv",sep=''))
     
@@ -103,7 +102,6 @@ getValHarris <- function(GCname, col) {
     
     return(val)
 }
-
 
 flux2Lx <- function(flux, GCname) {
     onePCinCM <- 3.086e+18
@@ -141,7 +139,8 @@ for ( i in seq(nrow(mantab)) ) {
     data.copy[row.id, paste('L_', bandinfo[[band]], '_lo', sep='')] <- flux2Lx(flux %>% filter(X == row.id) %>% select('uF_X_lo'), GCname)[[1]]
     data.copy[row.id, paste('L_', bandinfo[[band]], '_hi', sep='')] <- flux2Lx(flux %>% filter(X == row.id) %>% select('uF_X_hi'), GCname)[[1]]
 }
-message('Total ', i, ' sources have been editted' )
+message('Total ', i, ' luminosity values have been replaced' )
+
 
 # Re-calculate colors
 data.repl <- data.copy %>%
