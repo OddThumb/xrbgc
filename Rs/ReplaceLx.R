@@ -122,6 +122,7 @@ bandinfo <- c('0.3-1.0'=1,'1.0-2.0'=2,'2.0-7.0'=3,'0.3-7.0'=4,
 
 
 # Replacing
+L_b.df <- data.frame()
 data.copy <- data
 for ( i in seq(nrow(mantab)) ) {
     # Info from ManualList_*.csv
@@ -134,12 +135,26 @@ for ( i in seq(nrow(mantab)) ) {
     # Flux Data ({GCname}_flux_{band}.csv)
     flux <- read.csv(paste('spec/',gsub(" ", "",GCname),'_flux_',band,'.csv',sep=''))
     
+    # Calculate luminosity
+    L_b    <- flux2Lx(flux %>% filter(X == paste('src',row.id,sep='')) %>% select('uF_X'), GCname)[[1]]
+    L_b_lo <- flux2Lx(flux %>% filter(X == paste('src',row.id,sep='')) %>% select('uF_X_lo'), GCname)[[1]]
+    L_b_hi <- flux2Lx(flux %>% filter(X == paste('src',row.id,sep='')) %>% select('uF_X_hi'), GCname)[[1]]
+    
+    # Save as side table
+    L_b.df <- bind_rows(L_b.df, c('source_type' = as.character(data.copy[row.id,'source_type']),
+                                  'L_b'=L_b, 'L_b_lo'=L_b_lo, 'L_b_hi'=L_b_hi,
+                                  'index2'=row.id))
+    
     # Replacing
-    data.copy[row.id, paste('L_', bandinfo[[band]], sep='')]        <- flux2Lx(flux %>% filter(X == row.id) %>% select('uF_X'), GCname)[[1]]
-    data.copy[row.id, paste('L_', bandinfo[[band]], '_lo', sep='')] <- flux2Lx(flux %>% filter(X == row.id) %>% select('uF_X_lo'), GCname)[[1]]
-    data.copy[row.id, paste('L_', bandinfo[[band]], '_hi', sep='')] <- flux2Lx(flux %>% filter(X == row.id) %>% select('uF_X_hi'), GCname)[[1]]
+    data.copy[row.id, paste('L_', bandinfo[[band]], sep='')]        <- L_b
+    data.copy[row.id, paste('L_', bandinfo[[band]], '_lo', sep='')] <- L_b_lo
+    data.copy[row.id, paste('L_', bandinfo[[band]], '_hi', sep='')] <- L_b_hi
 }
 message('Total ', i, ' luminosity values have been replaced' )
+
+
+# Update manual table
+mantab.new <- bind_cols(mantab, L_b.df) %>% select(-c('X'))
 
 
 # Re-calculate colors
@@ -150,10 +165,16 @@ data.repl <- data.copy %>%
 
 
 # write csv for manual flux calculation
-output_name <- paste('DataSet_', gsub(" ", "", unique(select(data, 'GC')), fixed = TRUE), '_Repl.csv', sep='')
-write.csv(data.repl,
-          file = output_name,
+ManTab_name  <- paste('ManualTable_', gsub(" ", "", unique(select(data, 'GC')), fixed = TRUE), '.csv', sep='')
+DataSet_name <- paste('DataSet_', gsub(" ", "", unique(select(data, 'GC')), fixed = TRUE), '_Repl.csv', sep='')
+write.csv(mantab.new,
+          file = ManTab_name,
           quote = F, row.names = F)
-message(output_name, ' is saved in current directory')
+write.csv(data.repl,
+          file = DataSet_name,
+          quote = F, row.names = F)
+message(ManTab_name, ', ', DataSet_name, ' is saved in current directory')
+
+
 
 
