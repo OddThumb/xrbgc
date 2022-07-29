@@ -17,6 +17,7 @@ echo "
 "
 source $xrbgc/gcmlmanual.sh
 
+rm -r ~/cxcds_param4
 conda activate ciao
 
 alias gcmlmanual="source $xrbgc/gcmlmanual.sh"
