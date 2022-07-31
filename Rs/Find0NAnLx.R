@@ -95,7 +95,8 @@ bands <- c('0.3-1.0', '1.0-2.0', '2.0-7.0', '0.3-7.0', '0.5-1.5', '1.5-4.5', '4.
 
 
 # Searching Lx == 0
-indicies <- which(select(data, all_of(Lxs)) == 0, arr.ind = T)
+search.data <- select(data, all_of(Lxs))
+indicies <- which( ( search.data == 0 | is.na(search.data) ), arr.ind = T)
 
 
 # Result

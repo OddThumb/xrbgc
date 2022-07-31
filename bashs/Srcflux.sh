@@ -117,63 +117,82 @@ fi
 # =========================================================
 #                    (4) Making Regions 
 # =========================================================
-# Generates source and background regions from source list
-mkdir -v roi
-punlearn roi
-roi \
-  infile=$(ls matched_output/source_matched_*.fits) \
-  outsrc=roi/W_%03d.fits \
-  group=indi target=target \
-  compute_conf- clob+ mode=h
 
-#if [ -d roi ]; then
-if [ -f info/bkg.reg ]; then
-#  echo "roi directory is found"
-  printf "\nBackground region (info/bkg.reg) is found\n"
+
+# 1) info/src*.reg & info/bkg.reg are given
+src_arr=($(/bin/ls info/src*.reg))
+src_cnt=${#src_arr[@]}
+
+if [ src_cnt != 0 ]; then
+
+  printf "\nSource regions are found (info/src*.reg)\n"
+  /bin/ls info/src*.reg > srcreg.lis
+
+  if [ -f info/bkg.reg ]; then
+
+    printf "\nBackground region is found (info/bkg.reg)\n"
+    # Listing same background region with same number as the number of source regions 
+    nlines=$(wc -l < srcreg.lis)
+    for i in `seq 1 ${nlines}`; do
+      echo "info/bkg.reg" >> bkgreg.lis
+    done
+
+  else # IF info/bkg.reg NOT found
+
+    printf "\nFor given source regions, background region need to be found in info/bkg.reg\n" 
+    exit 3
+
+  fi
+
+else # IF [ src_cnt == 0 ]
+
+  printf "\nSource regions NOT found...\n"
+  printf "\nRunning roi...\n"
+
+  # Generates source and background regions from source list
+  mkdir -v roi
+  punlearn roi
+  roi \
+    infile=$(ls matched_output/source_matched_*.fits) \
+    outsrc=roi/W_%03d.fits \
+    group=indi target=target \
+    compute_conf- clob+ mode=h
   
   # Extract source and background regions from ./roi/*fits
   for r in roi/*.fits
   do
     echo "Creating source regions... ($r)"
+    
     regphystocel $r ${r}.srcreg clob+ verb=0
   done
+  /bin/ls roi/*.srcreg > srcreg.lis
 
-  # For srcflux input regions
-  if [ -f srcreg.lis ]; then
-    echo "srcreg.lis file already exists"
-  else
-    /bin/ls roi/*.srcreg >> srcreg.lis
-  fi
-  
-  # Listing same background region with same number as the number of source regions 
-  nlines=$(($(wc -l < matched_output/matched_sourcetypes_0.5.csv)-1))
-  for i in `seq 1 ${nlines}`; do
-    echo "info/bkg.reg" >> bkgreg.lis
-  done
-  
-else
-  echo "info/bkg.reg is not given, annulus background regions will be used"
-  
-  # Extract source and background regions from ./roi/*fits
-  for r in roi/*.fits
-  do
-    echo "Creating source & background regions... ($r)"
-    regphystocel $r ${r}.srcreg clob+ verb=0
-    regphystocel "${r}[bkgreg]" ${r}.bkgreg clob+ verb=0
-  done
+  if [ -f info/bkg.reg ]; then
 
-  # For srcflux input regions
-  if [ -f srcreg.lis ]; then
-    echo "srcreg.lis file already exists"
-  else
-    /bin/ls roi/*.srcreg >> srcreg.lis
-  fi
-  if [ -f bkgreg.lis ]; then
-    echo "bkgreg.lis file already exists"
-  else
-    /bin/ls roi/*.bkgreg >> bkgreg.lis
-  fi
+    printf "\nBackground region is found (info/bkg.reg)\n"
+    
+    # Listing same background region with same number as the number of source regions 
+    nlines=$(wc -l < srcreg.lis)
+    for i in `seq 1 ${nlines}`; do
+      echo "info/bkg.reg" >> bkgreg.lis
+    done
+
+  else # IF info/bkg.reg NOT found
+
+    echo "info/bkg.reg are NOT found, annulus background regions will be used"
   
+    # Extract source and background regions from ./roi/*fits
+    for r in roi/*.fits
+    do
+      echo "Creating source & background regions... ($r)"
+      
+      regphystocel $r ${r}.srcreg clob+ verb=0
+      regphystocel "${r}[bkgreg]" ${r}.bkgreg clob+ verb=0
+    done
+    /bin/ls roi/*.bkgreg > bkgreg.lis
+
+  fi
+
 fi
 
 
