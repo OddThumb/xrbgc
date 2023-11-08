@@ -57,7 +57,7 @@ source install_xrbgc.sh
 3. `Match` (in `R`)
 	* Source matching and asigning class name with angular distance threshold (`-t`; 0.5" is default) and with given csv file which includes "ra,dec,class".
 
-4. `GetSigma` or `FilterSigma` (in `R)
+4. `GetSigma` or `FilterSigma` (in `R`)
 	* `SRC_SIGNIFICANCE` column from `source_list.fits` (from `wavdetect`) can be extraced by `GetSigma`,
 	* or `source_list.fits` can be filtered by `FilterSigma` with given `--sigma` threshold.
 
