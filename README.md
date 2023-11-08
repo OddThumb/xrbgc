@@ -119,20 +119,20 @@ $ xginit -i true -e true
 ││
 │├┬─(3-A) if sources need to be filtered by 'significance',
 │││       (Filtered source_list_sigma3.0.fits will have less number of sources)
-│││   > FilterSigma [-h] --input "merged/wavdet/source_list.fits" \
+│││   > FilterSigma [-h] --input merged/wavdet/source_list.fits \
 │││                      --sigma 3 (default) \
-│││                      --output "source_list_sigma3.0.fits"
+│││                      --output source_list_sigma3.0.fits (default)
 │││
-│││   > Match [-h] -c "info/47Tuc_class.csv" \
-│││                -t 0.5 \
-│││                -w "source_list_simga3.0.fits" \
+│││   > Match [-h] -c info/47Tuc_class.csv \
+│││                -t 0.5 (default) \
+│││                -w merged/wavdet/source_list_simga3.0.fits \
 │││                -a TRUE   (including all unknowns)
 ││└─
 ││
 │└┬─(3-B) else if you want to filter significance later,
-│ │   > Match [-h] -c "info/47Tuc_class.csv" \
+│ │   > Match [-h] -c info/47Tuc_class.csv \
 │ │                -t 0.5 \
-│ │                -w "source_list.fits" \
+│ │                -w merged/wavdet/source_list.fits \
 │ │                -a TRUE   (including all unknowns)
 │ │ 
 │ │   > GetSigma [-h] -w matched_output/source_matched_0.5_allout.fits \
@@ -141,22 +141,23 @@ $ xginit -i true -e true
 │ └──
 │
 ├─(4) Run srcflux with "user plugin (default)"
-│    Default model is "xspowerlaw.p1" with "p1.PhoIndex=1.7" and "p1.norm=1e-5"
+│     Default model is "xspowerlaw.p1" with "p1.PhoIndex=1.7" and "p1.norm=1e-5"
 │  > Srcflux [-h] -n "47 Tuc" \
-│                 -s "matched_output/source_matched_0.5_allout.fits" \
-│                 -b "info/bkg.reg"
+│                 -s matched_output/source_matched_0.5_allout.fits \
+│                 -b info/bkg.reg
 │
 ├─(5) Compile .flux, labels, signifs
 │  > mv 231108_1553 (the output directory will be named with datetime)
 │  > CompileFlux [-h] -n "47 Tuc" \
-│                     -f "fluxes_xspowerlaw.p1/" \
-│                     -m "matched_output/match_and_all_0.5.csv" \
-│                     -s "Signif.csv (only if you chose 3-B)
+│                     -f fluxes_xspowerlaw.p1/ \
+│                     -m ../matched_output/match_and_all_0.5.csv \
+│                     -s ../matched_output/Signif.csv (only if you chose 3-B)
 │
 └─>>> Final output: "DataSet_47Tuc.csv"
 
 For details of each step, type a flag of "-h".
-
+If you want to read "[ PROCEDURE EXAMPLE ]" again in the future, type:
+ $ xgmanual
 ```
 
 
