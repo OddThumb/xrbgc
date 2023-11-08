@@ -30,7 +30,7 @@ mv xrbgc /path_you_want_to_install
 cd /path_you_want_to_install/xrbgc
 
 # INSTALL
-source install_xrbgc.sh
+bash install_xrbgc.sh
 ```
 
 
