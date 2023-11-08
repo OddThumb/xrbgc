@@ -17,7 +17,11 @@ of each globular cluster.
 
 
 ## Installation
-
+```bash
+cd /path_you_want_to_install
+git clone https://github.com/OddThumb/xrbgc.git
+```
+or
 ```bash
 # UNZIP
 unzip xrbgc-main.zip
@@ -28,7 +32,9 @@ mv xrbgc-main xrbgc
 # CHANGE DIRECTORY
 mv xrbgc /path_you_want_to_install
 cd /path_you_want_to_install/xrbgc
+```
 
+```bash
 # INSTALL
 bash install_xrbgc.sh
 ```
