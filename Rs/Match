@@ -100,19 +100,16 @@ if (allout) {
 }
 
 # Write new source fits file
-XRBGC_CIAO <- system("echo $xrbgc_ciao", intern=T)
-use_condaenv(XRBGC_CIAO)
-XRBGC_Dir <- system("echo $xrbgc", intern=T)
-source_python(paste(XRBGC_Dir,"/_pythons/rewriteFITS.py",sep=''))
-
-if (allout) {
-    outfitsname <- paste(subdirectory,"/source_matched_",angular.threshold,"_allout.fits",sep='')
-    re_writeFITs(data = srcfitspath, index = as.integer(1:nrow(src_coords3)), filename = outfitsname,
-                 addcol = src_coords3$source_type, coldtype = "A10", colname = "source_type")
-} else {
+if (!allout) {
+    XRBGC_CIAO <- system("echo $xrbgc_ciao", intern=T)
+    use_condaenv(XRBGC_CIAO)
+    XRBGC_Dir <- system("echo $xrbgc", intern=T)
+    source_python(paste(XRBGC_Dir,"/_pythons/rewriteFITS.py",sep=''))
     outfitsname <- paste(subdirectory,"/source_matched_",angular.threshold,".fits",sep='')
     re_writeFITs(data = srcfitspath, indes = as.integer(src_coords.match_ind), filename = outfitsname,
                  addcol = src_labels.match_ind, coldtype = "A10", colname = "source_type")
+    cat('└──▶ Matched source list fits file is saved in ', subdirectory,"/\n", sep='')
+} else {
+    cat(paste0('└──▶ Use ',srcfitspath,' for further analysis'))
 }
 
-cat('└──▶ Matched source list fits file is saved in ', subdirectory,"/\n", sep='')
