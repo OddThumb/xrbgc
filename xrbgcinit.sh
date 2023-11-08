@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # Help text
 usage="xginit [-h] [-i -e]
 where:
@@ -8,11 +7,11 @@ where:
       -i  Initialize (remove) directory: ~/cxcds_param4
           (Default: false)
       -e  Show expamles of workflow (xgmanual)
-          (Default: true)"
+          (Default: false)"
 
 # Default values
 init_rm=false
-example=true
+example=false
 
 # Get arguments
 while getopts ":hi:e:" opt; do
@@ -41,17 +40,18 @@ if $init_rm; then
 	rm -rf ~/cxcds_param4
 fi
 
-# Show examples of workflow (xgmanual)
-if $example; then
-	source $xrbgc/xgmanual
-fi
-
+# Activate ciao
 conda activate $xrbgc_ciao
 export PATH="$xrbgc:$xrbgc/bashs:$xrbgc/Rs:$xrbgc/Pythons:$PATH"
 
-ciao_ver=$(ciaover | grep -E '(^|\s)ciao($|\s)')
-ciao_contrib_ver=$(ciaover | grep "ciao-contrib")
-caldb_ver=$(ciaover | grep "caldb_main")
+# CIAO version info
+echo "Reading installed ciao config..."
+ciao_ver=$(${xrbgc_ciao}/bin/ciaover | grep -E '(^|\s)ciao($|\s)')
+ciao_ver=(${ciao_ver})
+ciao_contrib_ver=$(${xrbgc_ciao}/bin/ciaover | grep "ciao-contrib")
+ciao_contrib_ver=(${ciao_contrib_ver})
+caldb_ver=$(${xrbgc_ciao}/bin/ciaover | grep "caldb_main")
+caldb_ver=(${caldb_ver})
 
 echo "
  ┌──────────────────────────────┐
@@ -70,3 +70,8 @@ echo "
     Ref: Fruscione et al.(2006)  
  └──────────────────────────────┘
 "
+
+# Show examples of workflow (xgmanual)
+if $example; then
+	source $xrbgc/xgmanual
+fi
