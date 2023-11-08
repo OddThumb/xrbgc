@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 echo "
 # XRBGC" >> ~/.bash_profile
 echo "export xrbgc=$(pwd)" >> ~/.bash_profile
