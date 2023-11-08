@@ -127,7 +127,7 @@ $ xginit -i true -e true
 │││                -t 0.5 (default) \
 │││                -w merged/wavdet/source_list_simga3.0.fits \
 │││                -a TRUE   (including all unknowns)
-││└─
+││└────────────────────────────────────────────────────────────────────────────
 ││
 │└┬─(3-B) else if you want to filter significance later,
 │ │   > Match [-h] -c info/47Tuc_class.csv \
@@ -138,13 +138,18 @@ $ xginit -i true -e true
 │ │   > GetSigma [-h] -w matched_output/source_matched_0.5_allout.fits \
 │ │                   -o matched_output/Signif.csv
 │ │ 
-│ └──
+│ └────────────────────────────────────────────────────────────────────────────
 │
 ├─(4) Run srcflux with "user plugin (default)"
 │     Default model is "xspowerlaw.p1" with "p1.PhoIndex=1.7" and "p1.norm=1e-5"
 │  > Srcflux [-h] -n "47 Tuc" \
 │                 -s matched_output/source_matched_0.5_allout.fits \
-│                 -b info/bkg.reg
+│                 -b bkg.reg
+│                    │ You need to make a background region file by your self.
+│                    │ Because GC envrionment is very crowded, you can't rely
+│                    │ on the 'roi' command.
+│                    │ One "bkg.reg" will be used for all sources.
+│                    └──────────────────────────────────────────────────────────
 │
 ├─(5) Compile .flux, labels, signifs
 │  > mv 231108_1553 (the output directory will be named with datetime)
