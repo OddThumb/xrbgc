@@ -104,7 +104,7 @@ $ xginit -i true
 ├─(2) Merge observations and Do 'wavdetect'
 │    > MergeWav [-h] -n "47 Tuc" -r "r_h"
 │
-├┬(3) If source type labels are provided, (optional)
+├┬(3) if source type labels are provided, (optional)
 ││    Please MANUALLY prepare a csv file including columns of, at least: "ra, dec, source_type"
 ││    e.g.)
 ││    > /bin/cat 47Tuc_class.csv
@@ -117,7 +117,7 @@ $ xginit -i true
 ││
 │(Choose route A or B)
 ││
-│├┬─(3-A) If sources need to be filtered by 'significance',
+│├┬─(3-A) if sources need to be filtered by 'significance',
 │││       (Filtered source_list_sigma3.0.fits will have less number of sources)
 │││   > FilterSigma [-h] --input "merged/wavdet/source_list.fits" \
 │││                      --sigma 3 (default) \
@@ -151,7 +151,7 @@ $ xginit -i true
 │  > CompileFlux [-h] -n "47 Tuc" \
 │                     -f "fluxes_xspowerlaw.p1/" \
 │                     -m "matched_output/match_and_all_0.5.csv" \
-│                     -s "Signif.csv (If you chose 3-B)
+│                     -s "Signif.csv (only if you chose 3-B)
 │
 └─>>> Final output: "DataSet_47Tuc.csv"
 
