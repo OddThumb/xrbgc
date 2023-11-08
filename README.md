@@ -105,39 +105,40 @@ $ xginit -i true
 │    > MergeWav [-h] -n "47 Tuc" -r "r_h"
 │
 ├(3) If source type labels are provided, (optional)
-│    Please MANUALLY prepare a csv file including columns of, at least: "ra, dec, source_type"
-│    e.g.)
-│    > /bin/cat 47Tuc_class.csv
-│           ra,        dec, source_type
-│     6.033158, -72.083883,         AGB
-│     6.0356,   -72.093106,         AGB
-│     6.046079, -72.078897,         AGB
-│     6.029879, -72.081322,         AGB
-│     5.959879, -72.0754,           MSP
-│
-│ (Choose route A or B)
-├┤(3-A) If sources need to be filtered by 'significance',
-│├─┤Filtered source_list will have less number of sources.
-││   > FilterSigma [-h] --input "merged/wavdet/source_list.fits" \
-││                      --sigma 3 (default) \
-││                      --output "source_list_sigma3.0.fits"
+├┬─ Please MANUALLY prepare a csv file including columns of, at least: "ra, dec, source_type"
+││    e.g.)
+││    > /bin/cat 47Tuc_class.csv
+││           ra,        dec, source_type
+││     6.033158, -72.083883,         AGB
+││     6.0356,   -72.093106,         AGB
+││     6.046079, -72.078897,         AGB
+││     6.029879, -72.081322,         AGB
+││     5.959879, -72.0754,           MSP
 ││
-││   > Match [-h] -c "info/47Tuc_class.csv" \
-││                -t 0.5 \
-││                -w "source_list_simga3.0.fits" \
-││                -a TRUE   (including all unknowns)
-│└─
-│
-├┤(3-B) else if you want to filter significance later,
-││   > Match [-h] -c "info/47Tuc_class.csv" \
-││                -t 0.5 \
-││                -w "source_list.fits" \
-││                -a TRUE   (including all unknowns)
-││ 
-││   > GetSigma [-h] -w matched_output/source_matched_0.5_allout.fits \
-││                   -o matched_output/Signif.csv
-││ 
-│└──
+│(Choose route A or B)
+││
+│├┬─(3-A) If sources need to be filtered by 'significance',
+││├─ Filtered source_list will have less number of sources.
+│││   > FilterSigma [-h] --input "merged/wavdet/source_list.fits" \
+│││                      --sigma 3 (default) \
+│││                      --output "source_list_sigma3.0.fits"
+│││
+│││   > Match [-h] -c "info/47Tuc_class.csv" \
+│││                -t 0.5 \
+│││                -w "source_list_simga3.0.fits" \
+│││                -a TRUE   (including all unknowns)
+││└─
+││
+│└┬─(3-B) else if you want to filter significance later,
+│ │   > Match [-h] -c "info/47Tuc_class.csv" \
+│ │                -t 0.5 \
+│ │                -w "source_list.fits" \
+│ │                -a TRUE   (including all unknowns)
+│ │ 
+│ │   > GetSigma [-h] -w matched_output/source_matched_0.5_allout.fits \
+│ │                   -o matched_output/Signif.csv
+│ │ 
+│ └──
 │
 ├(4) Run srcflux with "user plugin (default)"
 │    Default model is "xspowerlaw.p1" with "p1.PhoIndex=1.7" and "p1.norm=1e-5"
