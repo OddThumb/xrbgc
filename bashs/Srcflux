@@ -119,6 +119,7 @@ printf "│\n├┬> Input files...\n"
 # List files for multiple observation
 obss=$(dirname $(/bin/ls */repro/*evt2.fits))
 nobs=${#obss[@]}
+
 # evt2 file
 if [ -f evt2.lis ]; then
   echo "│├> evt2.lis file is found"
@@ -236,7 +237,7 @@ mkdir "${datetime}"
 # Run srcflux
 printf "\n│\n└> Running srcflux... on ${datetime}\n"
 punlearn srcflux
-srcflux \
+$xrbgc_ciao/bin/srcflux \
   infile=@evt2.lis \
   pos=$srcfile \
   srcreg=@srcreg.lis \
@@ -252,7 +253,7 @@ srcflux \
   outroot="${datetime}/srcflux_${selected_model}/${selected_model}" \
   bkgresp=no clobber=yes conf=$conf psfmethod=arfcorr \
   plugin=${plugin_path} \
-  parallel=yes nproc=40 mode=h verbose=1 binsize=0.5 clob+
+  parallel=yes nproc=-1 mode=h verbose=1 binsize=0.5 clob+
 
 
 # =========================================================
