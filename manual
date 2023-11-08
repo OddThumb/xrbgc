@@ -9,6 +9,7 @@
 ├(2) Merge observations and Do 'wavdetect'
 │    > MergeWav [-h] -n "47 Tuc" -r "r_h"
 │
+├(3) Choose route A or B
 ├┤(3-A) (optional) If sources need to be filtered by 'significance',
 │├─┤Filtered source_list will have less number of sources.
 ││   > FilterSigma [-h] --input "merged/wavdet/source_list.fits" \
@@ -20,36 +21,43 @@
 ││                -w "source_list_simga3.0.fits" \
 ││                -a TRUE   (including all unknowns)
 │└─
-├┤(3-B) (optional) If source type labels are provided, (optional)
-│├┤(3-B-a) Please MANUALLY prepare a csv file including columns of,
-││         at least: "ra, dec, source_type"
-││   e.g.)
-││   > /bin/cat 47Tuc_class.csv
-││                      name,       ra,        dec, source_type
-││   CXOGlb J002407.9-720502, 6.033158, -72.083883,         AGB
-││   CXOGlb J002408.5-720535, 6.0356,   -72.093106,         AGB
-││   CXOGlb J002411.0-720444, 6.046079, -72.078897,         AGB
-││   CXOGlb J002407.1-720452, 6.029879, -72.081322,         AGB
-││   CXOGlb J002350.3-720431, 5.959879, -72.0754,           MSP
-│└─
 │
-│├┤(3-B-b)
-││   > Match [-h] -c "info/47Tuc_class.csv" \
-││                -t 0.5 \
-││                -w "source_list.fits" \
-││                -a TRUE   (including all unknowns)
+├┤(3-B) (optional) If source type labels are provided, (optional)
+│├┤(3-B-1) Please MANUALLY prepare a csv file including columns of,
+│││        at least: "ra, dec, source_type"
+│││  e.g.)
+│││  > /bin/cat 47Tuc_class.csv
+│││         ra,        dec, source_type
+│││   6.033158, -72.083883,         AGB
+│││   6.0356,   -72.093106,         AGB
+│││   6.046079, -72.078897,         AGB
+│││   6.029879, -72.081322,         AGB
+│││   5.959879, -72.0754,           MSP
+││└─
 ││
-││   > GetSigma [-h] -w matched_output/source_matched_0.5_allout.fits \
-││                   -o matched_output/Signif.csv
-│└─
+│├┤(3-B-2)
+│││  > Match [-h] -c "info/47Tuc_class.csv" \
+│││               -t 0.5 \
+│││               -w "source_list.fits" \
+│││               -a TRUE   (including all unknowns)
+│││
+│││  > GetSigma [-h] -w matched_output/source_matched_0.5_allout.fits \
+│││                  -o matched_output/Signif.csv
+││└─ 
+│└──
 ├(5) Run srcflux with "user plugin (default)"
+│    Default model is "xspowerlaw.p1" with "p1.PhoIndex=1.7" and "p1.norm=1e-5"
 │  > Srcflux [-h] -n "47 Tuc" \
 │                 -s "matched_output/source_matched_0.5_allout.fits" \
-│                 -b "info/bkg.reg" \
+│                 -b "info/bkg.reg"
 │
 ├(6) Compile .flux, labels, signifs
+│  > mv 231108_1553 (the output directory will be named with datetime)
 │  > CompileFlux [-h] -n "47 Tuc" \
 │                     -f "fluxes_xspowerlaw.p1/" \
 │                     -m "matched_output/match_and_all_0.5.csv" \
 │                     -s "Signif.csv
+│
 └>>> Final output: "DataSet_47Tuc.csv"
+
+For details of each step, type a flag of "-h".

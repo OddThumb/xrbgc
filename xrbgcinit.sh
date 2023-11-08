@@ -1,22 +1,5 @@
 #!/bin/bash
 
-echo "
- ┌──────────────────────────────┐
- │                              │  
- │        xrbgc (v1.0.0)        │  
- │                              │ 
- │    > Author: Sang In Kim     │ 
- │    > Date: 08 Nov 2023       │  
- │                              │  
- │   Wrapper scripts for CIAO   │     
- │                              │     
- │   CIAO  version: 4.15.1      │      
- │   ciao_contrib : 4.15.1      │     
- │   CALDB version: 4.10.2      │     
- │                              │     
- │  Ref: Fruscione et al.(2006) │   
- └──────────────────────────────┘
-"
 
 # Help text
 usage="xginit [-h] [-i -e]
@@ -65,3 +48,25 @@ fi
 
 conda activate $xrbgc_ciao
 export PATH="$xrbgc:$xrbgc/bashs:$xrbgc/Rs:$xrbgc/Pythons:$PATH"
+
+ciao_ver=$(ciaover | grep -E '(^|\s)ciao($|\s)')
+ciao_contrib_ver=$(ciaover | grep "ciao-contrib")
+caldb_ver=$(ciaover | grep "caldb_main")
+
+echo "
+ ┌──────────────────────────────┐
+
+          xrbgc (v1.0.0)         
+                                  
+      > Author: Sang In Kim       
+      > Date: 08 Nov 2023          
+                                   
+     Wrapper scripts for CIAO         
+                                      
+     CIAO  version: ${ciao_ver[1]} 
+     ciao_contrib : ${ciao_contrib_ver[1]} 
+     CALDB version: ${caldb_ver[1]} 
+                                 
+    Ref: Fruscione et al.(2006)  
+ └──────────────────────────────┘
+"

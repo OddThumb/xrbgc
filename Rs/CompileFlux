@@ -386,7 +386,6 @@ main <- function(GCname, fluxdir, vary, label_column, signif_column) {
         ff <- paste('DataSet_', gsub(" ","",GCname), '.csv', sep='')
         write.csv(Lx_df, file = ff, row.names = F)
         message("└▶ ", ff, " is saved in: ", getwd(), sep='')
-        message("*** IMPORTANT: DO NOT CHANGE DataSet file name as input data for classification!")
     } else {
         ff <- paste(outfile,'_',gsub(" ","",GCname),'.csv',sep='')
         message("└▶ ", ff, " is saved in: ", getwd(), sep='')
