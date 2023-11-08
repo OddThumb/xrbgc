@@ -94,18 +94,18 @@ $ xginit -i true
  └──────────────────────────────┘
 
 [ PROCEDURE EXAMPLE ]
-├(0) Download data (You can use: $ download_chandra_obsid {obsid})
+├─(0) Download data (You can use: $ download_chandra_obsid {obsid})
 │    > download_chandra_obsid 78,953,954,955,966
 │
-├(1) Reprocessing all ObsIDs in current directory
+├─(1) Reprocessing all ObsIDs in current directory
 │    > Reprocessing
 │    > y
 │
-├(2) Merge observations and Do 'wavdetect'
+├─(2) Merge observations and Do 'wavdetect'
 │    > MergeWav [-h] -n "47 Tuc" -r "r_h"
 │
-├(3) If source type labels are provided, (optional)
-├┬─ Please MANUALLY prepare a csv file including columns of, at least: "ra, dec, source_type"
+├┬(3) If source type labels are provided, (optional)
+││    Please MANUALLY prepare a csv file including columns of, at least: "ra, dec, source_type"
 ││    e.g.)
 ││    > /bin/cat 47Tuc_class.csv
 ││           ra,        dec, source_type
@@ -118,7 +118,7 @@ $ xginit -i true
 │(Choose route A or B)
 ││
 │├┬─(3-A) If sources need to be filtered by 'significance',
-││├─ Filtered source_list will have less number of sources.
+│││       (Filtered source_list_sigma3.0.fits will have less number of sources)
 │││   > FilterSigma [-h] --input "merged/wavdet/source_list.fits" \
 │││                      --sigma 3 (default) \
 │││                      --output "source_list_sigma3.0.fits"
@@ -140,20 +140,20 @@ $ xginit -i true
 │ │ 
 │ └──
 │
-├(4) Run srcflux with "user plugin (default)"
+├─(4) Run srcflux with "user plugin (default)"
 │    Default model is "xspowerlaw.p1" with "p1.PhoIndex=1.7" and "p1.norm=1e-5"
 │  > Srcflux [-h] -n "47 Tuc" \
 │                 -s "matched_output/source_matched_0.5_allout.fits" \
 │                 -b "info/bkg.reg"
 │
-├(5) Compile .flux, labels, signifs
+├─(5) Compile .flux, labels, signifs
 │  > mv 231108_1553 (the output directory will be named with datetime)
 │  > CompileFlux [-h] -n "47 Tuc" \
 │                     -f "fluxes_xspowerlaw.p1/" \
 │                     -m "matched_output/match_and_all_0.5.csv" \
 │                     -s "Signif.csv (If you chose 3-B)
 │
-└>>> Final output: "DataSet_47Tuc.csv"
+└─>>> Final output: "DataSet_47Tuc.csv"
 
 For details of each step, type a flag of "-h".
 
