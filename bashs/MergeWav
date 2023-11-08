@@ -1,0 +1,156 @@
+#!/bin/bash
+
+# Default value
+reg="r_h"
+
+# Help text
+usage="MergeWav [-h] [-r]
+where:
+    -h Show this help text
+    -n Name of GC (e.g. \"47 Tuc\") 
+    -r FOV region (default: ${reg})
+        r_h : Half-light radius circle region
+        r_c : Core radius circle region
+        none: Use whole available mosaicked region
+"
+
+# Get arguments
+while getopts ":hn:r:" opt; do
+    case $opt in
+        h)  echo "$usage"
+            exit 0
+            ;;
+        n)  IDorNAME="$OPTARG"
+            ;;
+        r)  reg="$OPTARG"
+            ;;
+        :)  printf "missing argument for -%s\n" "$OPTARG" >&2
+            echo "$usage" >&2
+            exit 1
+            ;;
+        \?) printf "illegal option: -%s\n" "$OPTARG" >&2
+            echo "$usage" >&2
+            exit 1
+            ;;
+    esac
+done
+
+
+# Find event files and make a list to merge them
+obss=$(dirname $(/bin/ls */repro/*repro_evt2.fits))
+nobs=${#obss[@]}
+echo "│> Collecting observations..."
+# evt2 file
+if [ -f evt2.lis ]; then
+  echo "├─> evt2.lis file is found"
+else
+  for obs in $obss
+  do
+	  /bin/ls $obs/*repro_evt2.fits >> evt2.lis
+	done
+  echo "├─> evt2.lis is created"
+fi
+
+# bpix1 file
+if [ -f bpix1.lis ]; then
+  echo "├─> bpix1.lis is found"
+else
+  for obs in $obss
+  do
+	  /bin/ls $obs/*repro_bpix1.fits >> bpix1.lis
+	done
+  echo "├─> bpix1.lis is created"
+fi
+	
+# asol1 file
+if [ -f asol1.lis ]; then
+  echo "├─> asol1.lis is found"
+else
+  for obs in $obss
+  do
+	  asols=($(/bin/ls $obs/*asol1.fits))
+	  if (( ${#asols[@]} > 1 )); then
+	    /bin/ls $obs/*repro_asol1.fits >> asol1.lis
+		else
+			/bin/ls $obs/*asol1.fits >> asol1.lis
+		fi
+	done
+  echo "├─> asol1.lis is created"
+fi
+  
+# msk1 file
+if [ -f msk1.lis ]; then
+  echo "└─> msk1.lis is found"
+else
+  for obs in $obss
+  do
+	  /bin/ls $obs/*msk1.fits >> msk1.lis
+	done
+  echo "└─> msk1.lis is created"
+fi
+
+
+# merge all observations
+punlearn merge_obs
+pset merge_obs asolfile=@asol1.lis
+pset merge_obs badpixfile=@bpix1.lis
+pset merge_obs maskfile=@msk1.lis
+merge_obs @evt2.lis merged/ binsize=0.5 psfecf=0.9 psfmerge=expmap
+
+
+# Dmcopy extensive image file with half-light radii FOV region
+cd merged/
+
+if [ ${reg} == "none" ]; then
+    echo "├─> Detecting sources in whole region..."
+    cp broad_thresh.img broad_image_input.fits
+    cp broad_thresh.psfmap broad_psfmap_input.fits
+    cp broad_thresh.expmap broad_expmap_input.fits
+
+elif [ ${reg} == "r_c" ]; then
+    echo "├─> Detecting sources in r_c region..."
+    FovRegion "${IDorNAME}" "${reg}"
+    echo "│> Running dmcopy with fov-${reg}.reg..."
+    punlearn dmcopy
+    dmcopy "broad_thresh.img[sky=region(fov-${reg}.reg)]" broad_image_input.fits
+    punlearn dmcopy
+    dmcopy "broad_thresh.psfmap[sky=region(fov-${reg}.reg)]" broad_psfmap_input.fits
+    punlearn dmcopy
+    dmcopy "broad_thresh.expmap[sky=region(fov-${reg}.reg)]" broad_expmap_input.fits
+    
+elif [ ${reg} == "r_h" ]; then
+    echo "├─> Detecting sources in r_h region..."
+    FovRegion "${IDorNAME}" "${reg}"
+    echo "│> Running dmcopy with fov-${reg}.reg..."
+    punlearn dmcopy
+    dmcopy "broad_thresh.img[sky=region(fov-${reg}.reg)]" broad_image_input.fits
+    punlearn dmcopy
+    dmcopy "broad_thresh.psfmap[sky=region(fov-${reg}.reg)]" broad_psfmap_input.fits
+    punlearn dmcopy
+    dmcopy "broad_thresh.expmap[sky=region(fov-${reg}.reg)]" broad_expmap_input.fits
+
+else
+    echo "(ERROR [-r]) Please check the region option"
+    exit 2
+fi
+
+
+# Run wavdetect
+mkdir wavdet
+echo "│> Running wavdetect..."
+punlearn wavdetect
+wavdetect infile=broad_image_input.fits \
+    regfile=wavdet/src.reg \
+    outfile=wavdet/source_list.fits \
+    scellfile=wavdet/source_cell.fits \
+    imagefile=wavdet/image.fits \
+    defnbkgfile=wavdet/background.fits \
+    expfile=broad_expmap_input.fits \
+    psffile=broad_psfmap_input.fits \
+    scales="1 1.414 2 2.828" \
+    sigthresh=1e-06 \
+    clobber=yes verbose=1 mode=h
+
+cd ../
+
+rm *.lis

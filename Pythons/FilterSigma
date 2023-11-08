@@ -1,0 +1,57 @@
+#!/opt/miniconda3/envs/ciao-4.15.1/bin/python
+
+import argparse
+parser = argparse.ArgumentParser(
+                    prog='FilterSignif',
+                    description='Filter the source_list.fits (BinTable) by "SRC_SIGNIFICANCE" >= \{signif_cutoff\}')
+
+parser.add_argument('--input',  type=str)
+parser.add_argument('--output', type=str)
+parser.add_argument('--sigma',  type=float, default=3)
+args = parser.parse_args()
+
+# Input file name check
+ext = args.input.split("/")[-1].split(".")[-1]
+if ext == "fits" or ext == "FITS" or ext == "fit" or ext == "FIT":
+    pass
+else:
+    raise TypeError("Input file must be 'fits' file (extension)")
+
+# Default output file name
+if args.output is None:
+    input_list = args.input.split("/")
+    file_name = input_list[-1]
+    new_name = file_name.split(".")[0]+"_sigma"+str(args.sigma)+"."+file_name.split(".")[1]
+    if len(input_list) > 1:
+        input_list[-1] = new_name
+        args.output = "/".join(input_list)
+    else:
+        args.output = new_name
+
+# Main funciton
+def thresh_by_signif(input, output, signif_cutoff=3):
+    import numpy as np
+    from astropy.io import fits
+    from astropy.table import Table
+    
+    # Thresholding significance using 'astropy.table.Table'
+    table = Table.read(input)
+    gteq = np.argwhere(
+        np.array(
+            list(table["SRC_SIGNIFICANCE"])
+            ) >= signif_cutoff
+        )
+    gteq = gteq.reshape([gteq.size,])
+    
+    # Edit original fits BinTable
+    hdul = fits.open(input)
+    threshed = hdul[1].data[gteq]
+    hdu = fits.BinTableHDU(threshed)
+    
+    # Save HDU filtered by significance cutoff 
+    hdu.writeto(output, overwrite=True)
+
+# Main
+print(f"> Filtering {args.input} by sigma={args.sigma:.1f}...")
+thresh_by_signif(input=args.input, output=args.output, signif_cutoff=args.sigma)
+print(f"> Output fits file saved in {args.output}")

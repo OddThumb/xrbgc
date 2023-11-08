@@ -1,0 +1,201 @@
+#!/bin/bash
+
+# =========================================================
+#                (0) Input Script Arguments
+# =========================================================
+# Help text
+usage="ReprojWav [-h] [-r]
+where:
+      -h  show this help text
+      -r  Reference ObsID"
+
+while getopts ":hr:" opt; do
+    case $opt in
+        h)  echo "$usage"
+            exit 0
+            ;;
+        r)  ref="$OPTARG"
+            ;;
+        :)  printf "Missing argument for -%s\n" "$OPTARG" >&2
+            echo "$usage" >&2
+            exit 1
+            ;;
+        \?) printf "Illegal option: -%s\n" "$OPTARG" >&2
+            echo "$usage" >&2
+            exit 1
+            ;;
+    esac
+done
+
+
+# Find event files and make a list to merge them
+if [ -f evt2.lis ]; then
+  echo ">>> evt2.lis file is found"
+else
+  /bin/ls */repro/*evt2.fits >> evt2.lis
+  echo ">>> evt2.lis is created"
+fi
+
+if [ -f bpix1.lis ]; then
+  echo ">>> bpix1.lis is found"
+else
+  /bin/ls */repro/*repro_bpix1.fits >> bpix1.lis
+  echo ">>> bpix1.lis is created"
+fi
+
+if [ -f asol1.lis ]; then
+  echo ">>> asol1.lis is found"
+else
+  /bin/ls */repro/*asol1.fits >> asol1.lis
+  echo ">>> asol1.lis is created"
+fi
+
+if [ -f msk1.lis ]; then
+  echo ">>> msk1.lis is found"
+else
+  /bin/ls */repro/*msk1.fits >> msk1.lis
+  echo ">>> msk1.lis is created"
+fi
+
+# =========================================================
+#                     (0) Run merge_obs
+# =========================================================
+echo ">>> Generating image, expmap, psfmap by merge_obs"
+punlearn merge_obs
+pset merge_obs asolfile=@asol1.lis
+pset merge_obs badpixfile=@bpix1.lis
+pset merge_obs maskfile=@msk1.lis
+merge_obs @evt2.lis merged/ binsize=0.5 psfecf=0.9 psfmerge=expmap
+
+
+# =========================================================
+#             (1) Wavdetect for source matching
+# =========================================================
+rm *.lis
+mv fov-r_h.reg merged/
+cd merged
+rm merged_evt.fits merged.fov
+mkdir -v wav_match
+
+# Iterate wavdet over obs_list
+fov_list=($(/bin/ls *.fov))
+evt_list=($(/bin/ls *_reproj_evt.fits))
+img_list=($(/bin/ls *_broad_thresh.img))
+psf_list=($(/bin/ls *_broad_thresh.psfmap))
+exp_list=($(/bin/ls *_broad_thresh.expmap))
+obs_list=()
+for fovi in ${fov_list[@]}; do
+    arrIN=(${fovi//./ }) 
+    obs=${arrIN[0]}
+    obs_list[${#obs_list[@]}]=${obs}
+done
+
+for obs in ${obs_list[@]}; do
+    printf ">>> wavdetect...ing on ObsID: ${obs}\n"
+
+    # Run wavdetect
+    punlearn wavdetect
+    pset wavdetect infile=${obs}_broad_thresh.img
+    pset wavdetect psffile=${obs}_broad_thresh.img
+    pset wavdetect expfile=${obs}_broad_thresh.expmap
+    pset wavdetect scales="1 2 4 6 8 12 16 24 32"
+    pset wavdetect outfile=wav_match/${obs}_broad.src
+    pset wavdetect scell=wav_match/${obs}_broad.cell
+    pset wavdetect imagefile=wav_match/${obs}_broad.recon
+    pset wavdetect defnbkg=wav_match/${obs}_broad.nbkg
+    pset wavdetect interdir=wav_match
+    wavdetect mode=h clobber=yes
+done
+
+
+# =========================================================
+#                (2) wcs_match & wcs_update
+# =========================================================
+# Only reference obsid is excluded
+wcs_list=${obs_list[@]/${ref}}
+
+mkdir -v wcs_match
+# Iterate wcs_match & wcs_update over wcs_list
+for wcs in ${wcs_list[@]}; do
+    printf ">>> wcs_match...ing on ObsID: ${wcs} with ${ref} as reference\n"
+
+    # Generate transformation file by wcs matching 
+    punlearn wcs_match
+    pset wcs_match infile=wav_match/${wcs}_broad.src
+    pset wcs_match refsrcfile=wav_match/${ref}_broad.src
+    pset wcs_match outfile=wcs_match/${wcs}_out.xform
+    pset wcs_match wcsfile=${wcs}_broad_thresh.img
+    pset wcs_match method=trans
+    wcs_match mode=h
+
+    # Update asol file
+    asolfile=($(/bin/ls ../${wcs}/repro/*_asol1.fits))
+    punlearn wcs_update
+    pset wcs_update infile=${asolfile[0]}
+    pset wcs_update outfile=wcs_match/${wcs}_corr_asol1.fits
+    pset wcs_update transformfile=wcs_match/${wcs}_out.xform
+    pset wcs_update wcsfile=merged/${wcs}_broad_thresh.img
+    wcs_update mode=h
+
+    # reproject_events
+    punlearn reproject_events
+    pset reproject_events infile=${wcs}_reproj_evt.fits
+    pset reproject_events outfile=${wcs}_reproj_evt2.fits
+    pset reproject_events aspect=wcs_match/${wcs}_corr_asol1.fits
+    reproject_events mode=h
+done
+
+
+
+# =========================================================
+#              (3) merge_obs & wavdetect again
+# =========================================================
+# Listing wcs corrected event files
+/bin/ls ${ref}_reproj_evt.fits > reproj2.lis
+/bin/ls *_reproj_evt2.fits >> reproj2.lis
+
+# Listing wcs corrected asol files
+refasol=($(/bin/ls ../${ref}/repro/*_asol1.fits))
+/bin/ls ${refasol[0]} > asol2.lis
+/bin/ls wcs_match/*_corr_asol1.fits >> asol2.lis
+
+# Listing others
+/bin/ls ../*/repro/*repro_bpix1.fits > bpix1.lis
+/bin/ls ../*/repro/*msk1.fits > msk1.lis
+
+# merge_obs
+punlearn merge_obs
+pset merge_obs asolfile=@asol2.lis
+pset merge_obs badpixfile=@bpix1.lis
+pset merge_obs maskfile=@msk1.lis
+merge_obs @reproj2.lis reprojMerged/ binsize=0.5 psfecf=0.9 psfmerge=expmap
+
+
+# Dmcopy extensive image file with half-light radii FOV region
+cd reprojMerged
+punlearn dmcopy
+dmcopy "broad_thresh.img[sky=region(../fov-r_h.reg)]" broad_image_fov.fits
+punlearn dmcopy
+dmcopy "broad_thresh.psfmap[sky=region(../fov-r_h.reg)]" broad_psfmap_fov.fits
+punlearn dmcopy
+dmcopy "broad_thresh.expmap[sky=region(../fov-r_h.reg)]" broad_expmap_fov.fits
+
+
+# wavdetect
+mkdir wavdet
+punlearn wavdetect
+wavdetect infile=broad_image_fov.fits \
+    regfile=wavdet/src.reg \
+    outfile=wavdet/source_list.fits \
+    scellfile=wavdet/source_cell.fits \
+    imagefile=wavdet/image.fits \
+    defnbkgfile=wavdet/background.fits \
+    expfile=broad_expmap_fov.fits \
+    psffile=broad_psfmap_fov.fits \
+    scales="1 1.414 2 2.828" sigthresh=1e-5 clobber=yes verbose=1 mode=h
+
+cd ../../
+ls merged/reprojMerged/*reproj_evt.fits > evt2.lis
+refasol=($(/bin/ls ${ref}/repro/*_asol1.fits))
+/bin/ls ${refasol[0]} > asol1.lis
+/bin/ls merged/wcs_match/*_corr_asol1.fits >> asol1.lis

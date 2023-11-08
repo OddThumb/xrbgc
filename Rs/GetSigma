@@ -1,0 +1,53 @@
+#!/usr/local/bin/Rscript
+
+options(warn=-1)
+# Input arguments directory ----
+if (!suppressMessages(suppressWarnings(require('argparse', character.only=TRUE, quietly=TRUE)))) {
+    install.packages('argparse', repos="https://cran.us.r-project.org")
+}
+suppressMessages(suppressWarnings(require(argparse, quietly=TRUE)))
+parser <- ArgumentParser()
+parser$add_argument("-w", "--wavsrc", type="character",
+                    help = "Path of source_list.fits from wavdetect [default %(default)s]")
+parser$add_argument("-o", "--output", type="character", default="Signif.csv")
+args <- parser$parse_args()
+srcfitspath       <- args$wavsrc
+output            <- args$output
+
+# Load libraries ----
+package.list <- list("FITSio","tidyverse","rlist")
+installed <- unlist(lapply(package.list, function(pkg) invisible(suppressMessages(suppressWarnings(require(pkg, character.only=TRUE, quietly=TRUE))))))
+if (!all(installed)) {
+    lapply(package.list[!installed], install.packages, repos="https://cran.us.r-project.org", dependencies=T, quite=TRUE)
+}
+options(tidyverse.quiet = TRUE)
+invisible(sapply(package.list, function(pkg) suppressMessages(suppressWarnings(require(pkg, character.only=TRUE, quietly=TRUE)))))
+
+
+# Read fits BINTABLE
+read.fits <- function(fits) {
+    message('├──▶ Loading: ', fits)
+    # Read energy band
+    band <- strsplit(fits, "\\_|.flux")[[1]][grepl("-", strsplit(fits, "\\_|.flux")[[1]])]
+    
+    fits <- readFITS(fits)
+    names(fits$col) <- fits$colNames
+    table <- list.cbind(fits$col) %>% as.data.frame() %>% distinct(COMPONENT, .keep_all=TRUE)
+    
+    for (col in colnames(table)) {
+        table[,col] <- as.numeric(table[,col])
+    }
+    
+    comment(table) <- band
+    return(table)
+}
+
+# Load and save csv
+fits <- read.fits(fits = srcfitspath)
+fits |> 
+    select(all_of(c("RA","DEC","SRC_SIGNIFICANCE"))) |> 
+    write.csv(file = output,
+              quote = F,
+              row.names = F)
+
+message('└──▶ ', output,' (RA, DEC, SRC_SIGNIFICANCE) is saved.')

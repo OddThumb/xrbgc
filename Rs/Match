@@ -1,0 +1,118 @@
+#!/usr/local/bin/Rscript
+
+# Input arguments directory ----
+if (!suppressMessages(suppressWarnings(require('argparse', character.only=TRUE, quietly=TRUE)))) {
+  install.packages('argparse', repos="https://cran.us.r-project.org")
+}
+suppressMessages(suppressWarnings(require(argparse, quietly=TRUE)))
+parser <- ArgumentParser()
+parser$add_argument("-t", "--thresh", type="double", default=0.5,
+                    help="Angular threshold to match sources with given labeled coordinates [default %(default)s]")
+parser$add_argument("-c", "--coords", type="character",
+                    help = "Path of labeled coordinates csv file")
+parser$add_argument("-w", "--wavsrc", type="character", default="merged_half/wavdet/source_list.fits",
+                    help = "Path of source_list.fits from wavdetect [default %(default)s]")
+parser$add_argument("-a", "--allout", type="logical", default=TRUE,
+                    help = "Whether output csv file contains all sources even matching labeles are provided [default TRUE]")
+args <- parser$parse_args()
+angular.threshold <- args$thresh
+coordspath        <- args$coords
+srcfitspath       <- args$wavsrc
+allout            <- args$allout
+subdirectory <- "matched_output"
+
+
+# Load libraries ----
+package.list <- list("FITSio","tidyverse",'dplyr', "rlist", "reticulate","celestial")
+installed <- unlist(lapply(package.list, function(pkg) invisible(suppressMessages(suppressWarnings(require(pkg, character.only=TRUE, quietly=TRUE))))))
+if (!all(installed)) {
+  lapply(package.list[!installed], install.packages, repos="https://cran.us.r-project.org", dependencies=T, quite=TRUE)
+}
+options(tidyverse.quiet = TRUE)
+invisible(sapply(package.list, function(pkg) suppressMessages(suppressWarnings(require(pkg, character.only=TRUE, quietly=TRUE)))))
+
+
+# Angular distance function ----
+Angdist <- function(a, b) {
+    a_ra  <- as.numeric(a[1])*(pi/180)
+    a_dec <- as.numeric(a[2])*(pi/180)
+    b_ra  <- as.numeric(b[1])*(pi/180)
+    b_dec <- as.numeric(b[2])*(pi/180)
+    
+    theta <- acos( sin(a_dec)*sin(b_dec) + cos(a_dec)*cos(b_dec)*cos(a_ra - b_ra) )
+    names(theta) <- NULL
+    return(as.numeric(theta))
+}
+
+
+# Create output directory ----
+dir.create(subdirectory)
+
+
+# Load labeled data ----
+label_table <- read.csv(coordspath)
+if (grepl(":",as.character(label_table$ra[1]))) {
+    label_table$ra  <- as.character(label_table$ra)  %>% sapply(hms2deg) %>% unname()
+}
+if (grepl(":",as.character(label_table$dec[1]))) {
+    label_table$dec <- as.character(label_table$dec) %>% sapply(dms2deg) %>% unname()
+}
+lab_coords <- label_table %>% select(matches(c("RA","DEC"),ignore.case=T))
+
+
+# source list fits file from wavdetect (CIAO) ----
+src_list <- readFITS(srcfitspath)
+names(src_list$col) <- src_list$colNames
+src_df <- list.cbind(src_list$col) %>% as.data.frame() %>% distinct(COMPONENT, .keep_all = T)
+src_df$RA        <- as.numeric(src_df$RA)
+src_df$DEC       <- as.numeric(src_df$DEC)
+src_df$COMPONENT <- as.numeric(src_df$COMPONENT)
+src_df <- arrange(src_df, COMPONENT)
+
+src_coords <- select(src_df, all_of(c("RA", "DEC", "COMPONENT")))
+
+
+# Matching coordinates ----
+index <- apply( src_coords, 1, function(x) apply( lab_coords, 1, function(y) Angdist(x, y) ) %>% which.min() )
+Ang.D <- apply( src_coords, 1, function(x) apply( lab_coords, 1, function(y) Angdist(x, y) ) %>% min() ) * (180/pi) * 3600
+src_coords2 <- cbind(src_coords, index, Ang.D)
+
+
+# Filter sources in FITS file with angular threshold
+message('├──▶ Angular distances < ', angular.threshold, '" are matched...', sep='')
+src_coords.match_ind <- which(src_coords2$Ang.D < angular.threshold)
+src_labels.match_ind <- label_table[src_coords2[src_coords.match_ind,"index"], 'source_type']
+
+# If any of matched rows is not found
+if ( length(src_coords.match_ind)==0 ) {
+     stop("(Error) There is no matched source within ", angular.threshold, " arcsecond threshold")
+}
+
+# Source types of matched sources
+src_coords2[src_coords.match_ind,"source_type"] <- src_labels.match_ind
+src_coords3 <- select(src_coords2, 
+                      all_of(c("RA","DEC","source_type")))
+
+if (allout) {
+  write.csv(src_coords3, paste(subdirectory,"/match_and_all_",angular.threshold,".csv",sep=''), quote = F, row.names = F)
+} else {
+  write.csv(filter(src_coords3,!is.na(source_type)), paste(subdirectory,"/matched_sourcetypes_",angular.threshold,".csv",sep=''), quote = F, row.names = F)
+}
+
+# Write new source fits file
+XRBGC_CIAO <- system("echo $xrbgc_ciao", intern=T)
+use_condaenv(XRBGC_CIAO)
+XRBGC_Dir <- system("echo $xrbgc", intern=T)
+source_python(paste(XRBGC_Dir,"/_pythons/rewriteFITS.py",sep=''))
+
+if (allout) {
+    outfitsname <- paste(subdirectory,"/source_matched_",angular.threshold,"_allout.fits",sep='')
+    re_writeFITs(data = srcfitspath, index = as.integer(1:nrow(src_coords3)), filename = outfitsname,
+                 addcol = src_coords3$source_type, coldtype = "A10", colname = "source_type")
+} else {
+    outfitsname <- paste(subdirectory,"/source_matched_",angular.threshold,".fits",sep='')
+    re_writeFITs(data = srcfitspath, indes = as.integer(src_coords.match_ind), filename = outfitsname,
+                 addcol = src_labels.match_ind, coldtype = "A10", colname = "source_type")
+}
+
+cat('└──▶ Matched source list fits file is saved in ', subdirectory,"/\n", sep='')

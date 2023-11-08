@@ -1,0 +1,273 @@
+#!/bin/bash
+
+# =========================================================
+#                    (-1) Pre-requisite
+# =========================================================
+# Select spectral model
+models=('xspowerlaw.p1' \
+        'xsbbodyrad.b1' \
+        'xsapec.a1')
+params=("p1.PhoIndex=1.7;p1.norm=1e-5" \ 
+        "b1.kT=3;b1.norm=1"\
+        "a1.kT=1;a1.norm=1")
+
+# Band info
+en_lo=(0.3 1.5 0.3)
+en_hi=(1.5 7.0 7.0)
+effen=(0.9 3.6 1.9) # effective energy (monochromatic energy)
+
+# Default values
+paramidx=0 # default (PowerLaw)
+energy_idx=(0 1 2)
+nH_alt=1
+conf=0.90
+datetime="$(date +"%y%m%d_%H%M")"
+user_plugin="true"
+
+# =========================================================
+#                (0) Input Script Arguments
+# =========================================================
+# Help text
+usage="Srcflux [-h] [-n -s -p -H]
+where:
+      -h  Show this help text
+      -n  GC name with white space. e.g.) '47 Tuc'
+      -s  Source list FITS file path
+      -b  Background region file path
+      -p  Parameter index
+          |index|  model
+          |  0  | ${models[0]} (default)
+          |  1  | ${models[1]}
+          |  2  | ${models[2]}
+      -H  Alternative nH value (default=${nH_alt}; 1 means 1e22 cm^-2)
+      -c  Confidence percentage (default=${conf})
+      -u  Whether use user plugin or not (default=${user_plugin})"
+
+# Get arguments
+while getopts ":hn:s:b:e:p:H:c:u:" opt; do
+    case $opt in
+        h)  echo "$usage"
+            exit 0
+            ;;
+        n)  IDorNAME="$OPTARG"
+            ;;
+				s)  srcfile="$OPTARG"
+						;;
+        b)  bkgfile="$OPTARG"
+            ;;
+        p)  paramidx="$OPTARG"
+            ;;
+        e)  energy_str="$OPTARG"
+            IFS=' ' read -r -a energy_idx <<< "$energy_str"
+            ;;
+				H)  nH_alt="$OPTARG"
+						;;
+				c)  conf="$OPTARG"
+						;;
+        u)  user_plugin="$OPTARG"
+            ;;
+        :)  printf "missing argument for -%s\n" "$OPTARG" >&2
+            echo "$usage" >&2
+            exit 1
+            ;;
+        \?) printf "illegal option: -%s\n" "$OPTARG" >&2
+            echo "$usage" >&2
+            exit 1
+            ;;
+    esac
+done
+
+
+# =========================================================
+#            (1) Printing out Chosen Arguments
+# =========================================================
+# Checking spectral parameters 
+case $paramidx in
+    [0-2]) echo "
+├> Selected model and its parameters for chosen model is:"
+    echo "│   *model: ${models[$paramidx]}
+│   *param: ${params[$modelidx]}"
+selected_model=${models[$paramidx]}
+selected_param=${params[$paramidx]}
+    ;;
+    *) echo "(ERROR) Parameter index (-p) between 0-2
+ [ Spectral models ]
+   index   model
+     0  : ${models[0]}
+     1  : ${models[1]}
+     2  : ${models[2]}" >&2
+    exit 2
+esac
+
+
+# =========================================================
+#  (2) Get Hydrogen Column Density from Harris Cat (2010)
+# =========================================================
+# Get nH from Harris GC Catalog
+nH=$(CalcnH "${IDorNAME}")
+echo "├> nH=${nH}"
+if [ "$nH" == "NA" ] || [ "${#nH}" == 0 ]; then
+  echo "(Error) An extinction value for $IDorNAME does not exist in Harris GC Catalog (2010)..." >&2
+  nH=$nH_alt
+fi
+
+
+# =========================================================
+#                   (3) Input Observations
+# =========================================================
+printf "│\n├┬> Input files...\n"
+# List files for multiple observation
+obss=$(dirname $(/bin/ls */repro/*evt2.fits))
+nobs=${#obss[@]}
+# evt2 file
+if [ -f evt2.lis ]; then
+  echo "│├> evt2.lis file is found"
+else
+  /bin/ls merged/*_reproj_evt.fits >> evt2.lis
+  #for obs in $obss
+  #do
+  #  /bin/ls $obs/*repro_evt2.fits >> evt2.lis
+  #done
+  echo "│├> evt2.lis is created"
+fi
+
+# bpix1 file
+if [ -f bpix1.lis ]; then
+  echo "│├> bpix1.lis is found"
+else
+  for obs in $obss
+  do
+    /bin/ls $obs/*repro_bpix1.fits >> bpix1.lis
+  done
+  echo "│├> bpix1.lis is created"
+fi
+
+# asol1 file
+if [ -f asol1.lis ]; then
+  echo "│├> asol1.lis is found"
+else
+  for obs in $obss
+  do
+    asols=($(/bin/ls $obs/*asol1.fits))
+    if (( ${#asols[@]} > 1 )); then
+      /bin/ls $obs/*repro_asol1.fits >> asol1.lis
+    else
+      /bin/ls $obs/*asol1.fits >> asol1.lis
+    fi
+  done
+  echo "│├> asol1.lis is created"
+fi
+
+# msk1 file
+if [ -f msk1.lis ]; then
+  echo "│└> msk1.lis is found"
+else
+  for obs in $obss
+  do
+    /bin/ls $obs/*msk1.fits >> msk1.lis
+  done
+  echo "│└> msk1.lis is created"
+fi
+
+
+# =========================================================
+#                    (4) Making Regions 
+# =========================================================
+srcfilename=$(basename -- "$srcfile")
+srcextension="${srcfilename##*.}"
+bkgfilename=$(basename -- "$bkgfile")
+bkgextension="${bkgfilename##*.}"
+
+# For source regions
+if [ "$srcextension" == "fits" ]; then
+  # Generates source and background regions from source list
+  printf "│\n├> Running RegSplit...\n"
+  RegSplit -m "$srcfile" -o "srcreg"
+  /bin/ls srcreg/*.reg > srcreg.lis
+else
+  echo "(ERROR [-s]) Only '.fits' is allowed for source region files"
+  exit 2
+fi
+
+# For background regions
+if [ "$bkgextension" == "reg" ]; then
+  # Listing same background region with same number as the number of source regions 
+  nlines=$(wc -l < srcreg.lis)
+  for i in `seq 1 ${nlines}`; do
+    echo $bkgfile >> bkgreg.lis
+  done
+fi
+
+
+# =========================================================
+#                     (5) energy bands
+# =========================================================
+bands_arr=()
+for i in ${energy_idx[*]}; do
+  band_arr+=("${en_lo[$i]}:${en_hi[$i]}:${effen[$i]}")
+done
+band_str="${band_arr[*]}"
+
+printf "│\n├> Bands: $band_str"
+
+
+# =========================================================
+#                      (6) User Plugin
+# =========================================================
+# Default plugin is $xrbgc/_pythons/PL_plugin.py
+# Power-law model (xsphabs.abs1*xspowerlaw.p1) fitting with
+#     - nH           (fixed)
+#     - PhoIndex=1.7 (fixed),
+#     - norm=1e-5    (thawed),
+# to calculate flux with 100 sampling.
+
+if [ $user_plugin = true ]; then
+  plugin_path="$xrbgc/_pythons/PL_plugin.py"
+else
+  plugin_path="none"
+fi
+
+
+# =========================================================
+#                      (7) Run srcflux
+# =========================================================
+mkdir "${datetime}"
+
+# Run srcflux
+printf "│\n└> Running srcflux... on ${datetime}\n"
+punlearn srcflux
+srcflux \
+  infile=@evt2.lis \
+  pos=$srcfile \
+  srcreg=@srcreg.lis \
+  bkgreg=@bkgreg.lis \
+  asolfile=@asol1.lis \
+  bpixfile=@bpix1.lis \
+  mskfile=@msk1.lis \
+  absmodel="xsphabs.abs1" \
+  absparams="abs1.nH=$nH" \
+  model="${selected_model}" \
+  paramvals="${selected_param}" \
+  bands="${band_str%,}"\
+  outroot="${datetime}/srcflux_${selected_model}/${selected_model}" \
+  bkgresp=no clobber=yes conf=$conf psfmethod=arfcorr \
+  plugin=${plugin_path} \
+  parallel=yes nproc=40 mode=h verbose=1 binsize=0.5 clob+
+
+
+# =========================================================
+#                   (6) Organizing Outputs
+# =========================================================
+mkdir -v "listfiles"
+mv *.lis listfiles/
+mv listfiles ${datetime}
+mv srcreg ${datetime}
+mv *.log ${datetime}
+
+# Copy *.flux files only into ./fluxes/
+cd ${datetime}
+mkdir -v "fluxes_${selected_model}"
+cp srcflux_${selected_model}/*.flux fluxes_${selected_model}/
+cd ..
+
+###################### End of Script ######################

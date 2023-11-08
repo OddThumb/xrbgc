@@ -1,10 +1,12 @@
+#!/usr/local/bin/Rscript
+
 # Input arguments directory ----
 args = commandArgs(trailingOnly=TRUE)
 GCname <- as.character(args[1])
 r_name <- as.character(args[2])
 if (length(args)<2) {
   stop('(Error) All argument must be supplied
-        e.g.) $ fovregion.R ("GC name") (e.g. "r_c")', call.=FALSE)
+        e.g.) $ FovRegion "GC name" "r_h"', call.=FALSE)
 }
 
 

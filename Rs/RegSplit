@@ -1,0 +1,56 @@
+#!/usr/local/bin/Rscript
+# Suppress Warnings
+options(warn=-1)
+
+# Load libraries ----
+package.list <- list("FITSio","tidyverse","rlist")
+installed <- unlist(lapply(package.list, function(pkg) invisible(suppressMessages(suppressWarnings(require(pkg, character.only=TRUE, quietly=TRUE))))))
+if (!all(installed)) {
+    lapply(package.list[!installed], install.packages, repos="https://cran.seoul.go.kr/", dependencies=T, quite=TRUE)
+}
+options(tidyverse.quiet = TRUE)
+invisible(sapply(package.list, function(pkg) suppressMessages(suppressWarnings(require(pkg, character.only=TRUE, quietly=TRUE)))))
+
+# Input arguments directory ----
+if (!suppressMessages(suppressWarnings(require('argparse', character.only=TRUE, quietly=TRUE)))) {
+    install.packages('argparse')
+}
+suppressMessages(suppressWarnings(require(argparse, quietly=TRUE)))
+parser <- ArgumentParser()
+parser$add_argument("-m", "--matchfits", type="character", default=NULL, 
+                    help = "Try: matched_output/source_matched_0.5.fits")
+parser$add_argument("-o", "--outroot", type="character", default=NULL, 
+                    help = "Output csv file name (Default: 'DataSet_{GCNAME}.csv'")
+args <- parser$parse_args()
+matchfits <- args$matchfits
+outroot <- args$outroot
+
+# Load source fits
+fits <- readFITS(matchfits)
+
+# Assign column names and construct a data frame
+names(fits$col) <- fits$colNames
+table <- list.cbind(fits$col) %>% as.data.frame() %>% distinct(COMPONENT, .keep_all = T)
+
+# Change data type of COMPONENT from character to numeric
+table$COMPONENT <- as.numeric(table$COMPONENT)
+
+# Based on numeric COMPONENTs arrange rows
+table <- arrange(table, COMPONENT)
+
+# Get region expression
+srcreg.vec <- with(table, expr={
+    paste(gsub(" ", "", SHAPE),"(",X,",",Y,",",V24,",",V25,",",ROTANG,")", sep='')
+})
+
+# Region file names
+srcreg.name <- paste(outroot,"/src_",sprintf("%03d",seq_along(srcreg.vec)),".reg",sep="")
+
+# Write source regions
+if (!dir.exists(outroot)) {
+    dir.create(outroot)
+}
+invisible(mapply(function(srcreg, name) {
+    write(srcreg,file=name,append=F)
+}, srcreg=srcreg.vec, name=srcreg.name))
+
