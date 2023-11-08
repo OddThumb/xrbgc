@@ -234,7 +234,7 @@ fi
 mkdir "${datetime}"
 
 # Run srcflux
-printf "│\n└> Running srcflux... on ${datetime}\n"
+printf "\n│\n└> Running srcflux... on ${datetime}\n"
 punlearn srcflux
 srcflux \
   infile=@evt2.lis \
