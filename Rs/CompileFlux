@@ -361,6 +361,7 @@ main <- function(GCname, fluxdir, vary, label_column, signif_column) {
     }
     
     # Load label information ----
+    reloc_cols <- c()
     if (is.null(matched.file)) {
         message('├▶ Labels are not given')
         labels <- NA
@@ -368,6 +369,7 @@ main <- function(GCname, fluxdir, vary, label_column, signif_column) {
         message('├▶ Adding label info')
         labels <- read.csv(matched.file)[,label_column]
         Lx_df[,label_column] <- labels
+        reloc_cols <- append(reloc_cols, label_column)
     }
     
     if (is.null(signif.file)) {
@@ -376,9 +378,10 @@ main <- function(GCname, fluxdir, vary, label_column, signif_column) {
         message('├▶ Adding sigma info')
         sigmas <- read.csv(signif.file)[,signif_column]
         Lx_df[,"SRC_SIGNIFICANCE"] <- sigmas
+        reloc_cols <- append(reloc_cols, signif_column)
     }
     
-    Lx_df <- Lx_df |> relocate(all_of(c(label_column,"SRC_SIGNIFICANCE")), .before=RAPOS)
+    Lx_df <- Lx_df |> relocate(all_of(reloc_cols), .before=RAPOS)
     
     
     # Save data frame ----
