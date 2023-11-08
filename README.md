@@ -1,11 +1,11 @@
 # ![xrbgc_logo](xrbgc_logo.png) powered by CIAO
 
 `xrbgc` is an open source wrapper scripts for Chandra Interactive Analysis of Observations (CIAO) [[1](#References)] users who want to get X-ray luminosities of objects, easily. `xrbgc` includes wrapper bash scripts composed of CIAO commands and `R` scripts for processing data.
-
+The author have used this tool for analyzing Globular Cluster (GC) data observed by Chandra.
 
 
 ## Documentation
-In this script, all-parts-combined [CATALOG OF PARAMETERS FOR MILKY WAY GLOBULAR CLUSTERS](https://physics.mcmaster.ca/~harris/mwgc.dat) [[2](#References)] database is included as one csv file for incorperating following values:
+In this script, all-parts-combined [CATALOG OF PARAMETERS FOR MILKY WAY GLOBULAR CLUSTERS](https://physics.mcmaster.ca/~harris/mwgc.dat) [[2](#References)] (If I missed any copyrights, please let me know) database is included as one csv file for incorperating following values:
 
 - **the half-light radius (`r_h`)**
 - **the core radius (`r_c`)**
