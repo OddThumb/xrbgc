@@ -1,6 +1,8 @@
 #!/bin/bash
 
-echo "# XRBGC" >> ~/.bash_profile
+
+echo "
+# XRBGC" >> ~/.bash_profile
 echo "export xrbgc=$(pwd)" >> ~/.bash_profile
 ciaopath=($(conda env list | grep ciao))
 ciaopath=${ciaopath[1]}
