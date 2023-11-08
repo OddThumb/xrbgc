@@ -76,7 +76,7 @@ source install_xrbgc.sh
 ## Usages
 
 ```bash
-$ xginit -i true
+$ xginit -i true -e true
  ┌──────────────────────────────┐
  │                              │
  │        xrbgc (v1.0.0)        │
