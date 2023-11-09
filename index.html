@@ -1,236 +1,239 @@
-
-<!DOCTYPE html>
-<html lang="en-US">
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>powered by CIAO | xrbgc</title>
-<meta name="generator" content="Jekyll v3.9.3" />
-<meta property="og:title" content="powered by CIAO" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="Wrapper scripts for CIAO" />
-<meta property="og:description" content="Wrapper scripts for CIAO" />
-<link rel="canonical" href="https://oddthumb.github.io/xrbgc/" />
-<meta property="og:url" content="https://oddthumb.github.io/xrbgc/" />
-<meta property="og:site_name" content="xrbgc" />
-<meta property="og:type" content="website" />
-<meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="powered by CIAO" />
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","description":"Wrapper scripts for CIAO","headline":"powered by CIAO","name":"xrbgc","url":"https://oddthumb.github.io/xrbgc/"}</script>
-<!-- End Jekyll SEO tag -->
-
-    <link rel="stylesheet" href="/xrbgc/assets/css/style.css?v=e3566a0ca5d234e833b39d4fcd20405e77210ed7">
-    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
-
-<!-- Setup Google Analytics -->
-
-
-
-<!-- You can set your favicon here -->
-<!-- link rel="shortcut icon" type="image/x-icon" href="/xrbgc/favicon.ico" -->
-
-<!-- end custom head snippets -->
-
-  </head>
-  <body>
-    <div class="container-lg px-3 my-5 markdown-body">
-      
-      <h1><a href="https://oddthumb.github.io/xrbgc/">xrbgc</a></h1>
-      
-
-      <h1 id="-powered-by-ciao"><img src="/xrbgc/xrbgc_logo.png" alt="xrbgc_logo" /> powered by CIAO</h1>
-
-<p><code class="language-plaintext highlighter-rouge">xrbgc</code> is an open source wrapper scripts for Chandra Interactive Analysis of Observations (CIAO) [<a href="#References">1</a>] users who want to get X-ray luminosities of objects, easily. <code class="language-plaintext highlighter-rouge">xrbgc</code> includes wrapper bash scripts composed of CIAO commands and <code class="language-plaintext highlighter-rouge">R</code> scripts for processing data.
-The author have used this tool for analyzing the globular cluster (GC) data observed by Chandra.</p>
-
-<h2 id="documentation">Documentation</h2>
-<p>In this script, all-parts-combined <a href="https://physics.mcmaster.ca/~harris/mwgc.dat">CATALOG OF PARAMETERS FOR MILKY WAY GLOBULAR CLUSTERS</a> [<a href="#References">2</a>] (If I missed any copyrights, please let me know) database is included as one csv file for incorperating following values:</p>
-
-<ul>
-  <li><strong>the half-light radius (<code class="language-plaintext highlighter-rouge">r_h</code>)</strong></li>
-  <li><strong>the core radius (<code class="language-plaintext highlighter-rouge">r_c</code>)</strong></li>
-  <li><strong>the distance from solar system (<code class="language-plaintext highlighter-rouge">R_sun</code>)</strong></li>
-  <li>and <strong>the color excess (<code class="language-plaintext highlighter-rouge">EBV</code>)</strong></li>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2487">
+  <meta name="google-site-verification" content="google4daf13597164dcf3.html">
+  <style type="text/css">
+    p.p3 {margin: 0.0px 0.0px 12.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Menlo; -webkit-text-stroke: #000000}
+    p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Menlo; -webkit-text-stroke: #000000; min-height: 15.0px}
+    p.p9 {margin: 0.0px 0.0px 12.0px 0.0px; font: 12.0px Times; color: #0000e9; -webkit-text-stroke: #0000e9}
+    li.li5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000}
+    li.li6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Menlo; -webkit-text-stroke: #000000}
+    span.s1 {text-decoration: underline ; font-kerning: none}
+    span.s2 {font-kerning: none}
+    span.s3 {font: 13.0px Menlo; font-kerning: none}
+    span.s4 {text-decoration: underline ; font-kerning: none; color: #0000e9; -webkit-text-stroke: 0px #0000e9}
+    span.s5 {font: 12.0px Times; text-decoration: underline ; font-kerning: none; color: #0000e9; -webkit-text-stroke: 0px #0000e9}
+    span.s6 {-webkit-text-stroke: 0px #000000}
+    span.s7 {font: 12.0px Times; font-kerning: none}
+    span.s8 {font: 13.0px Menlo; -webkit-text-stroke: 0px #000000}
+    span.s9 {font-kerning: none; color: #000000; -webkit-text-stroke: 0px #000000}
+    span.s10 {text-decoration: underline ; font-kerning: none; -webkit-text-stroke: 0px #0000e9}
+    ol.ol1 {list-style-type: decimal}
+    ul.ul1 {list-style-type: disc}
+    ul.ul2 {list-style-type: circle}
+    ul.ul3 {list-style-type: square}
+  </style>
+</head>
+<body>
+<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Times; color: #0000e9; -webkit-text-stroke: #0000e9"><span class="s1"><a href="https://oddthumb.github.io/xrbgc/"><b>xrbgc</b></a></span></h1>
+<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Times; -webkit-text-stroke: #000000"><span class="s2"><b><img src="file:///Attachment.png" alt="Attachment.png"> powered by CIAO</b></span></h1>
+<p class="p3"><span class="s3">xrbgc</span><span class="s2"> is an open source wrapper scripts for Chandra Interactive Analysis of Observations (CIAO) [</span><span class="s4">1</span><span class="s2">] users who want to get X-ray luminosities of objects, easily. </span><span class="s3">xrbgc</span><span class="s2"> includes wrapper bash scripts composed of CIAO commands and </span><span class="s3">R</span><span class="s2"> scripts for processing data. The author have used this tool for analyzing the globular cluster (GC) data observed by Chandra.</span></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s2"><b>Documentation</b></span></h2>
+<p class="p3"><span class="s2">In this script, all-parts-combined <a href="https://physics.mcmaster.ca/~harris/mwgc.dat"><span class="s5">CATALOG OF PARAMETERS FOR MILKY WAY GLOBULAR CLUSTERS</span></a> [</span><span class="s4">2</span><span class="s2">] (If I missed any copyrights, please let me know) database is included as one csv file for incorperating following values:</span></p>
+<ul class="ul1">
+  <li class="li5"><span class="s6"><b></b></span><span class="s2"><b>the half-light radius (</b></span><span class="s3"><b>r_h</b></span><span class="s2"><b>)</b></span></li>
 </ul>
-
-<p>of each globular cluster.</p>
-
-<h2 id="installation">Installation</h2>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /path_you_want_to_install
-git clone https://github.com/OddThumb/xrbgc.git
-</code></pre></div></div>
-<p>or</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># UNZIP</span>
-unzip xrbgc-main.zip
-
-<span class="c"># RENAME</span>
-<span class="nb">mv </span>xrbgc-main xrbgc
-
-<span class="c"># CHANGE DIRECTORY</span>
-<span class="nb">mv </span>xrbgc /path_you_want_to_install
-<span class="nb">cd</span> /path_you_want_to_install/xrbgc
-</code></pre></div></div>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># INSTALL</span>
-bash install_xrbgc.sh
-</code></pre></div></div>
-
-<h2 id="requirements">Requirements</h2>
-
-<blockquote>
-  <p><code class="language-plaintext highlighter-rouge">ciao</code> &gt;= 4.15: Chandra Interactive Analysis of Observations (<a href="https://cxc.cfa.harvard.edu/ciao/">https://cxc.cfa.harvard.edu/ciao/</a>)</p>
-
-  <p><code class="language-plaintext highlighter-rouge">R</code>: The R Project for Statistical Computing (<a href="https://r-project.org">https://r-project.org</a>)</p>
-
-  <p><code class="language-plaintext highlighter-rouge">python</code> &amp; <code class="language-plaintext highlighter-rouge">astropy</code>: for only ‘fits’ in astropy.io</p>
-</blockquote>
-
-<h2 id="features">Features</h2>
-
-<ol>
-  <li><code class="language-plaintext highlighter-rouge">Reprocessing</code> (in <code class="language-plaintext highlighter-rouge">bash</code>)
-    <ul>
-      <li>Automated <code class="language-plaintext highlighter-rouge">chandra_repro</code> process over existing all ObsIDs in current directory.</li>
-    </ul>
-  </li>
-  <li><code class="language-plaintext highlighter-rouge">MergeWav</code> = <code class="language-plaintext highlighter-rouge">merge_obs</code> + <code class="language-plaintext highlighter-rouge">wavdetect</code> (in <code class="language-plaintext highlighter-rouge">ciao</code>)
-    <ul>
-      <li>Sub-arcsecond merging.</li>
-      <li>Narrow-down <code class="language-plaintext highlighter-rouge">wavdetect</code> region with a circular region with the radius of <code class="language-plaintext highlighter-rouge">r_h</code> or <code class="language-plaintext highlighter-rouge">r_c</code> (from [<a href="#References">2</a>])</li>
-    </ul>
-  </li>
-  <li><code class="language-plaintext highlighter-rouge">Match</code> (in <code class="language-plaintext highlighter-rouge">R</code>)
-    <ul>
-      <li>Source matching and asigning class name with angular distance threshold (<code class="language-plaintext highlighter-rouge">-t</code>; 0.5” is default) and with given csv file which includes “ra,dec,class”.</li>
-    </ul>
-  </li>
-  <li><code class="language-plaintext highlighter-rouge">GetSigma</code> or <code class="language-plaintext highlighter-rouge">FilterSigma</code> (in <code class="language-plaintext highlighter-rouge">R</code>)
-    <ul>
-      <li><code class="language-plaintext highlighter-rouge">SRC_SIGNIFICANCE</code> column from <code class="language-plaintext highlighter-rouge">source_list.fits</code> (from <code class="language-plaintext highlighter-rouge">wavdetect</code>) can be extraced by <code class="language-plaintext highlighter-rouge">GetSigma</code>,</li>
-      <li>or <code class="language-plaintext highlighter-rouge">source_list.fits</code> can be filtered by <code class="language-plaintext highlighter-rouge">FilterSigma</code> with given <code class="language-plaintext highlighter-rouge">--sigma</code> threshold.</li>
-    </ul>
-  </li>
-  <li><code class="language-plaintext highlighter-rouge">srcflux</code> (in <code class="language-plaintext highlighter-rouge">ciao</code>)
-    <ul>
-      <li>Compute the <strong>luminosity</strong> with <code class="language-plaintext highlighter-rouge">R_sun</code> ([<a href="#References">2</a>]) from <strong>merged events</strong>.</li>
-      <li><code class="language-plaintext highlighter-rouge">min</code>, <code class="language-plaintext highlighter-rouge">max</code>, and <code class="language-plaintext highlighter-rouge">median</code> value of the probability of variability from <code class="language-plaintext highlighter-rouge">glvary</code>.</li>
-      <li>As a default, run <code class="language-plaintext highlighter-rouge">user_script</code>: Following parameters will be frozen while <code class="language-plaintext highlighter-rouge">user_script</code> spectral fitting (by <code class="language-plaintext highlighter-rouge">Sherpa</code>):
-        <ul>
-          <li><code class="language-plaintext highlighter-rouge">xsphabs.abs1.nH</code></li>
-          <li><code class="language-plaintext highlighter-rouge">xspowerlaw.p1.PhoIndex</code> or <code class="language-plaintext highlighter-rouge">xsbbodyrad.b1.kT</code> or <code class="language-plaintext highlighter-rouge">xsapec.a1.kT</code></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
+<ul class="ul1">
+  <li class="li5"><span class="s6"><b></b></span><span class="s2"><b>the core radius (</b></span><span class="s3"><b>r_c</b></span><span class="s2"><b>)</b></span></li>
+</ul>
+<ul class="ul1">
+  <li class="li5"><span class="s6"><b></b></span><span class="s2"><b>the distance from solar system (</b></span><span class="s3"><b>R_sun</b></span><span class="s2"><b>)</b></span></li>
+</ul>
+<ul class="ul1">
+  <li class="li5"><span class="s6"></span><span class="s2">and <b>the color excess (</b></span><span class="s3"><b>EBV</b></span><span class="s2"><b>)</b></span></li>
+</ul>
+<p class="p3"><span class="s2">of each globular cluster.</span></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s2"><b>Installation</b></span></h2>
+<p class="p6"><span class="s2">cd /path_you_want_to_install</span></p>
+<p class="p6"><span class="s2">git clone https://github.com/OddThumb/xrbgc.git</span></p>
+<p class="p3"><span class="s2">or</span></p>
+<p class="p6"><span class="s2"># UNZIP</span></p>
+<p class="p6"><span class="s2">unzip xrbgc-main.zip</span></p>
+<p class="p7"><span class="s2"></span><br></p>
+<p class="p6"><span class="s2"># RENAME</span></p>
+<p class="p6"><span class="s2">mv xrbgc-main xrbgc</span></p>
+<p class="p7"><span class="s2"></span><br></p>
+<p class="p6"><span class="s2"># CHANGE DIRECTORY</span></p>
+<p class="p6"><span class="s2">mv xrbgc /path_you_want_to_install</span></p>
+<p class="p6"><span class="s2">cd /path_you_want_to_install/xrbgc</span></p>
+<p class="p6"><span class="s2"># INSTALL</span></p>
+<p class="p6"><span class="s2">bash install_xrbgc.sh</span></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s2"><b>Requirements</b></span></h2>
+<p class="p3"><span class="s3">ciao</span><span class="s2"> &gt;= 4.15: Chandra Interactive Analysis of Observations (<a href="https://cxc.cfa.harvard.edu/ciao/"><span class="s5">https://cxc.cfa.harvard.edu/ciao/</span></a>)</span></p>
+<p class="p3"><span class="s3">R</span><span class="s2">: The R Project for Statistical Computing (<a href="https://r-project.org/"><span class="s5">https://r-project.org</span></a>)</span></p>
+<p class="p3"><span class="s3">python</span><span class="s2"> &amp; </span><span class="s3">astropy</span><span class="s2">: for only ‘fits’ in astropy.io</span></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s2"><b>Features</b></span></h2>
+<ol class="ol1">
+  <li class="li6"><span class="s6"></span><span class="s2">Reprocessing</span><span class="s7"> (in </span><span class="s2">bash</span><span class="s7">)</span></li>
 </ol>
-
-<p><em>Note: All libraries for <code class="language-plaintext highlighter-rouge">R</code> scripts will be detected and downloaded automatically in each script.</em></p>
-
-<h2 id="usages">Usages</h2>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>xginit <span class="nt">-i</span> <span class="nb">true</span> <span class="nt">-e</span> <span class="nb">true</span>
- ┌──────────────────────────────┐
- │                              │
- │        xrbgc <span class="o">(</span>v1.0.0<span class="o">)</span>        │
- │                              │
- │    <span class="o">&gt;</span> Author: Sang In Kim     │
- │    <span class="o">&gt;</span> Date: 08 Nov 2023       │
- │                              │
- │   Wrapper scripts <span class="k">for </span>CIAO   │
- │                              │
- │   CIAO  version: 4.15.1      │
- │   ciao_contrib : 4.15.1      │
- │   CALDB version: 4.10.2      │
- │                              │
- │  Ref: Fruscione et al.<span class="o">(</span>2006<span class="o">)</span> │
- └──────────────────────────────┘
-
-<span class="o">[</span> PROCEDURE EXAMPLE <span class="o">]</span>
-├─<span class="o">(</span>0<span class="o">)</span> Download data <span class="o">(</span>You can use: <span class="nv">$ </span>download_chandra_obsid <span class="o">{</span>obsid<span class="o">})</span>
-│    <span class="o">&gt;</span> download_chandra_obsid 78,953,954,955,966
-│
-├─<span class="o">(</span>1<span class="o">)</span> Reprocessing all ObsIDs <span class="k">in </span>current directory
-│    <span class="o">&gt;</span> Reprocessing
-│    <span class="o">&gt;</span> y
-│
-├─<span class="o">(</span>2<span class="o">)</span> Merge observations and Do <span class="s1">'wavdetect'</span>
-│    <span class="o">&gt;</span> MergeWav <span class="o">[</span><span class="nt">-h</span><span class="o">]</span> <span class="nt">-n</span> <span class="s2">"47 Tuc"</span> <span class="nt">-r</span> <span class="s2">"r_h"</span>
-│
-├┬<span class="o">(</span>3<span class="o">)</span> <span class="k">if </span><span class="nb">source type </span>labels are provided, <span class="o">(</span>optional<span class="o">)</span>
-││    Please MANUALLY prepare a csv file including columns of, at least: <span class="s2">"ra, dec, source_type"</span>
-││    e.g.<span class="o">)</span>
-││    <span class="o">&gt;</span> /bin/cat 47Tuc_class.csv
-││           ra,        dec, source_type
-││     6.033158, <span class="nt">-72</span>.083883,         AGB
-││     6.0356,   <span class="nt">-72</span>.093106,         AGB
-││     6.046079, <span class="nt">-72</span>.078897,         AGB
-││     6.029879, <span class="nt">-72</span>.081322,         AGB
-││     5.959879, <span class="nt">-72</span>.0754,           MSP
-││
-│<span class="o">(</span>Choose route A or B<span class="o">)</span>
-││
-│├┬─<span class="o">(</span>3-A<span class="o">)</span> <span class="k">if </span>sources need to be filtered by <span class="s1">'significance'</span>,
-│││       <span class="o">(</span>Filtered source_list_sigma3.0.fits will have less number of sources<span class="o">)</span>
-│││   <span class="o">&gt;</span> FilterSigma <span class="o">[</span><span class="nt">-h</span><span class="o">]</span> <span class="nt">--input</span> merged/wavdet/source_list.fits <span class="se">\</span>
-│││                      <span class="nt">--sigma</span> 3 <span class="o">(</span>default<span class="o">)</span> <span class="se">\</span>
-│││                      <span class="nt">--output</span> source_list_sigma3.0.fits <span class="o">(</span>default<span class="o">)</span>
-│││
-│││   <span class="o">&gt;</span> Match <span class="o">[</span><span class="nt">-h</span><span class="o">]</span> <span class="nt">-c</span> info/47Tuc_class.csv <span class="se">\</span>
-│││                <span class="nt">-t</span> 0.5 <span class="o">(</span>default<span class="o">)</span> <span class="se">\</span>
-│││                <span class="nt">-w</span> merged/wavdet/source_list_simga3.0.fits <span class="se">\</span>
-│││                <span class="nt">-a</span> TRUE   <span class="o">(</span>including all unknowns<span class="o">)</span>
-││└────────────────────────────────────────────────────────────────────────────
-││
-│└┬─<span class="o">(</span>3-B<span class="o">)</span> <span class="k">else if </span>you want to filter significance later,
-│ │   <span class="o">&gt;</span> Match <span class="o">[</span><span class="nt">-h</span><span class="o">]</span> <span class="nt">-c</span> info/47Tuc_class.csv <span class="se">\</span>
-│ │                <span class="nt">-t</span> 0.5 <span class="se">\</span>
-│ │                <span class="nt">-w</span> merged/wavdet/source_list.fits <span class="se">\</span>
-│ │                <span class="nt">-a</span> TRUE   <span class="o">(</span>including all unknowns<span class="o">)</span>
-│ │ 
-│ │   <span class="o">&gt;</span> GetSigma <span class="o">[</span><span class="nt">-h</span><span class="o">]</span> <span class="nt">-w</span> matched_output/source_matched_0.5_allout.fits <span class="se">\</span>
-│ │                   <span class="nt">-o</span> matched_output/Signif.csv
-│ │ 
-│ └────────────────────────────────────────────────────────────────────────────
-│
-├─<span class="o">(</span>4<span class="o">)</span> Run srcflux with <span class="s2">"user plugin (default)"</span>
-│     Default model is <span class="s2">"xspowerlaw.p1"</span> with <span class="s2">"p1.PhoIndex=1.7"</span> and <span class="s2">"p1.norm=1e-5"</span>
-│  <span class="o">&gt;</span> Srcflux <span class="o">[</span><span class="nt">-h</span><span class="o">]</span> <span class="nt">-n</span> <span class="s2">"47 Tuc"</span> <span class="se">\</span>
-│                 <span class="nt">-s</span> matched_output/source_matched_0.5_allout.fits <span class="se">\</span>
-│                 <span class="nt">-b</span> bkg.reg
-│                    │ You need to make a background region file by your self.
-│                    │ Because GC envrionment is very crowded, you can<span class="s1">'t rely
-│                    │ on the '</span>roi<span class="s1">' command.
-│                    │ One "bkg.reg" will be used for all sources.
-│                    └──────────────────────────────────────────────────────────
-│
-├─(5) Compile .flux, labels, signifs
-│  &gt; mv 231108_1553 (the output directory will be named with datetime)
-│  &gt; CompileFlux [-h] -n "47 Tuc" \
-│                     -f fluxes_xspowerlaw.p1/ \
-│                     -m ../matched_output/match_and_all_0.5.csv \
-│                     -s ../matched_output/Signif.csv (only if you chose 3-B)
-│
-└─&gt;&gt;&gt; Final output: "DataSet_47Tuc.csv"
-
-For details of each step, type a flag of "-h".
-If you want to read "[ PROCEDURE EXAMPLE ]" again in the future, type:
- $ xgmanual
-</span></code></pre></div></div>
-
-<h3 id="references">References</h3>
-<p>[1] <a href="https://doi.org/10.1117/12.671760">Fruscione et al. 2006, SPIE Proc. 6270, 62701V, D.R. Silvia &amp; R.E. Doxsey, eds.</a></p>
-
-<p>[2] <a href="http://adsabs.harvard.edu/full/1996AJ....112.1487H">Harris, W.E. 1996, AJ, 112, 1487</a></p>
-
-
-
-      
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
-    <script>anchors.add();</script>
-  </body>
+<ol class="ol1">
+  <ul class="ul2">
+    <li class="li5"><span class="s6"></span><span class="s2">Automated </span><span class="s3">chandra_repro</span><span class="s2"> process over existing all ObsIDs in current directory.</span></li>
+  </ul>
+</ol>
+<ol class="ol1">
+  <li class="li6"><span class="s6"></span><span class="s2">MergeWav</span><span class="s7"> = </span><span class="s2">merge_obs</span><span class="s7"> + </span><span class="s2">wavdetect</span><span class="s7"> (in </span><span class="s2">ciao</span><span class="s7">)</span></li>
+</ol>
+<ol class="ol1">
+  <ul class="ul2">
+    <li class="li5"><span class="s6"></span><span class="s2">Sub-arcsecond merging.</span></li>
+  </ul>
+</ol>
+<ol class="ol1">
+  <ul class="ul2">
+    <li class="li5"><span class="s6"></span><span class="s2">Narrow-down </span><span class="s3">wavdetect</span><span class="s2"> region with a circular region with the radius of </span><span class="s3">r_h</span><span class="s2"> or </span><span class="s3">r_c</span><span class="s2"> (from [</span><span class="s4">2</span><span class="s2">])</span></li>
+  </ul>
+</ol>
+<ol class="ol1">
+  <li class="li6"><span class="s6"></span><span class="s2">Match</span><span class="s7"> (in </span><span class="s2">R</span><span class="s7">)</span></li>
+</ol>
+<ol class="ol1">
+  <ul class="ul2">
+    <li class="li5"><span class="s6"></span><span class="s2">Source matching and asigning class name with angular distance threshold (</span><span class="s3">-t</span><span class="s2">; 0.5” is default) and with given csv file which includes “ra,dec,class”.</span></li>
+  </ul>
+</ol>
+<ol class="ol1">
+  <li class="li6"><span class="s6"></span><span class="s2">GetSigma</span><span class="s7"> or </span><span class="s2">FilterSigma</span><span class="s7"> (in </span><span class="s2">R</span><span class="s7">)</span></li>
+</ol>
+<ol class="ol1">
+  <ul class="ul2">
+    <li class="li6"><span class="s6"></span><span class="s2">SRC_SIGNIFICANCE</span><span class="s7"> column from </span><span class="s2">source_list.fits</span><span class="s7"> (from </span><span class="s2">wavdetect</span><span class="s7">) can be extraced by </span><span class="s2">GetSigma</span><span class="s7">,</span></li>
+  </ul>
+</ol>
+<ol class="ol1">
+  <ul class="ul2">
+    <li class="li5"><span class="s6"></span><span class="s2">or </span><span class="s3">source_list.fits</span><span class="s2"> can be filtered by </span><span class="s3">FilterSigma</span><span class="s2"> with given </span><span class="s3">--sigma</span><span class="s2"> threshold.</span></li>
+  </ul>
+</ol>
+<ol class="ol1">
+  <li class="li6"><span class="s6"></span><span class="s2">srcflux</span><span class="s7"> (in </span><span class="s2">ciao</span><span class="s7">)</span></li>
+</ol>
+<ol class="ol1">
+  <ul class="ul2">
+    <li class="li5"><span class="s6"></span><span class="s2">Compute the <b>luminosity</b> with </span><span class="s3">R_sun</span><span class="s2"> ([</span><span class="s4">2</span><span class="s2">]) from <b>merged events</b>.</span></li>
+  </ul>
+</ol>
+<ol class="ol1">
+  <ul class="ul2">
+    <li class="li5"><span class="s8"></span><span class="s3">min</span><span class="s2">, </span><span class="s3">max</span><span class="s2">, and </span><span class="s3">median</span><span class="s2"> value of the probability of variability from </span><span class="s3">glvary</span><span class="s2">.</span></li>
+  </ul>
+</ol>
+<ol class="ol1">
+  <ul class="ul2">
+    <li class="li5"><span class="s6"></span><span class="s2">As a default, run </span><span class="s3">user_script</span><span class="s2">: Following parameters will be frozen while </span><span class="s3">user_script</span><span class="s2"> spectral fitting (by </span><span class="s3">Sherpa</span><span class="s2">):</span></li>
+  </ul>
+</ol>
+<ol class="ol1">
+  <ul class="ul2">
+    <ul class="ul3">
+      <li class="li6"><span class="s6"></span><span class="s2">xsphabs.abs1.nH</span></li>
+    </ul>
+  </ul>
+</ol>
+<ol class="ol1">
+  <ul class="ul2">
+    <ul class="ul3">
+      <li class="li6"><span class="s6"></span><span class="s2">xspowerlaw.p1.PhoIndex</span><span class="s7"> or </span><span class="s2">xsbbodyrad.b1.kT</span><span class="s7"> or </span><span class="s2">xsapec.a1.kT</span></li>
+    </ul>
+  </ul>
+</ol>
+<p class="p3"><span class="s2"><i>Note: All libraries for </i></span><span class="s3"><i>R</i></span><span class="s2"><i> scripts will be detected and downloaded automatically in each script.</i></span></p>
+<h2 style="margin: 0.0px 0.0px 14.9px 0.0px; font: 18.0px Times; -webkit-text-stroke: #000000"><span class="s2"><b>Usages</b></span></h2>
+<p class="p6"><span class="s2">$ xginit -i true -e true</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>┌──────────────────────────────┐</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>│<span class="Apple-converted-space">                              </span>│</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>│<span class="Apple-converted-space">        </span>xrbgc (v1.0.0)<span class="Apple-converted-space">        </span>│</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>│<span class="Apple-converted-space">                              </span>│</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>│<span class="Apple-converted-space">    </span>&gt; Author: Sang In Kim <span class="Apple-converted-space">    </span>│</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>│<span class="Apple-converted-space">    </span>&gt; Date: 08 Nov 2023 <span class="Apple-converted-space">      </span>│</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>│<span class="Apple-converted-space">                              </span>│</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>│ <span class="Apple-converted-space">  </span>Wrapper scripts for CIAO <span class="Apple-converted-space">  </span>│</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>│<span class="Apple-converted-space">                              </span>│</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>│ <span class="Apple-converted-space">  </span>CIAO<span class="Apple-converted-space">  </span>version: 4.15.1<span class="Apple-converted-space">      </span>│</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>│ <span class="Apple-converted-space">  </span>ciao_contrib : 4.15.1<span class="Apple-converted-space">      </span>│</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>│ <span class="Apple-converted-space">  </span>CALDB version: 4.10.2<span class="Apple-converted-space">      </span>│</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>│<span class="Apple-converted-space">                              </span>│</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>│<span class="Apple-converted-space">  </span>Ref: Fruscione et al.(2006) │</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>└──────────────────────────────┘</span></p>
+<p class="p7"><span class="s2"></span><br></p>
+<p class="p6"><span class="s2">[ PROCEDURE EXAMPLE ]</span></p>
+<p class="p6"><span class="s2">├─(0) Download data (You can use: $ download_chandra_obsid {obsid})</span></p>
+<p class="p6"><span class="s2">│<span class="Apple-converted-space">    </span>&gt; download_chandra_obsid 78,953,954,955,966</span></p>
+<p class="p6"><span class="s2">│</span></p>
+<p class="p6"><span class="s2">├─(1) Reprocessing all ObsIDs in current directory</span></p>
+<p class="p6"><span class="s2">│<span class="Apple-converted-space">    </span>&gt; Reprocessing</span></p>
+<p class="p6"><span class="s2">│<span class="Apple-converted-space">    </span>&gt; y</span></p>
+<p class="p6"><span class="s2">│</span></p>
+<p class="p6"><span class="s2">├─(2) Merge observations and Do 'wavdetect'</span></p>
+<p class="p6"><span class="s2">│<span class="Apple-converted-space">    </span>&gt; MergeWav [-h] -n "47 Tuc" -r "r_h"</span></p>
+<p class="p6"><span class="s2">│</span></p>
+<p class="p6"><span class="s2">├┬(3) if source type labels are provided, (optional)</span></p>
+<p class="p6"><span class="s2">││<span class="Apple-converted-space">    </span>Please MANUALLY prepare a csv file including columns of, at least: "ra, dec, source_type"</span></p>
+<p class="p6"><span class="s2">││<span class="Apple-converted-space">    </span>e.g.)</span></p>
+<p class="p6"><span class="s2">││<span class="Apple-converted-space">    </span>&gt; /bin/cat 47Tuc_class.csv</span></p>
+<p class="p6"><span class="s2">││ <span class="Apple-converted-space">          </span>ra,<span class="Apple-converted-space">        </span>dec, source_type</span></p>
+<p class="p6"><span class="s2">││ <span class="Apple-converted-space">    </span>6.033158, -72.083883, <span class="Apple-converted-space">        </span>AGB</span></p>
+<p class="p6"><span class="s2">││ <span class="Apple-converted-space">    </span>6.0356, <span class="Apple-converted-space">  </span>-72.093106, <span class="Apple-converted-space">        </span>AGB</span></p>
+<p class="p6"><span class="s2">││ <span class="Apple-converted-space">    </span>6.046079, -72.078897, <span class="Apple-converted-space">        </span>AGB</span></p>
+<p class="p6"><span class="s2">││ <span class="Apple-converted-space">    </span>6.029879, -72.081322, <span class="Apple-converted-space">        </span>AGB</span></p>
+<p class="p6"><span class="s2">││ <span class="Apple-converted-space">    </span>5.959879, -72.0754, <span class="Apple-converted-space">          </span>MSP</span></p>
+<p class="p6"><span class="s2">││</span></p>
+<p class="p6"><span class="s2">│(Choose route A or B)</span></p>
+<p class="p6"><span class="s2">││</span></p>
+<p class="p6"><span class="s2">│├┬─(3-A) if sources need to be filtered by 'significance',</span></p>
+<p class="p6"><span class="s2">│││ <span class="Apple-converted-space">      </span>(Filtered source_list_sigma3.0.fits will have less number of sources)</span></p>
+<p class="p6"><span class="s2">│││ <span class="Apple-converted-space">  </span>&gt; FilterSigma [-h] --input merged/wavdet/source_list.fits \</span></p>
+<p class="p6"><span class="s2">│││<span class="Apple-converted-space">                      </span>--sigma 3 (default) \</span></p>
+<p class="p6"><span class="s2">│││<span class="Apple-converted-space">                      </span>--output source_list_sigma3.0.fits (default)</span></p>
+<p class="p6"><span class="s2">│││</span></p>
+<p class="p6"><span class="s2">│││ <span class="Apple-converted-space">  </span>&gt; Match [-h] -c info/47Tuc_class.csv \</span></p>
+<p class="p6"><span class="s2">│││<span class="Apple-converted-space">                </span>-t 0.5 (default) \</span></p>
+<p class="p6"><span class="s2">│││<span class="Apple-converted-space">                </span>-w merged/wavdet/source_list_simga3.0.fits \</span></p>
+<p class="p6"><span class="s2">│││<span class="Apple-converted-space">                </span>-a TRUE <span class="Apple-converted-space">  </span>(including all unknowns)</span></p>
+<p class="p6"><span class="s2">││└────────────────────────────────────────────────────────────────────────────</span></p>
+<p class="p6"><span class="s2">││</span></p>
+<p class="p6"><span class="s2">│└┬─(3-B) else if you want to filter significance later,</span></p>
+<p class="p6"><span class="s2">│ │ <span class="Apple-converted-space">  </span>&gt; Match [-h] -c info/47Tuc_class.csv \</span></p>
+<p class="p6"><span class="s2">│ │<span class="Apple-converted-space">                </span>-t 0.5 \</span></p>
+<p class="p6"><span class="s2">│ │<span class="Apple-converted-space">                </span>-w merged/wavdet/source_list.fits \</span></p>
+<p class="p6"><span class="s2">│ │<span class="Apple-converted-space">                </span>-a TRUE <span class="Apple-converted-space">  </span>(including all unknowns)</span></p>
+<p class="p6"><span class="s2">│ │<span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="s2">│ │ <span class="Apple-converted-space">  </span>&gt; GetSigma [-h] -w matched_output/source_matched_0.5_allout.fits \</span></p>
+<p class="p6"><span class="s2">│ │ <span class="Apple-converted-space">                  </span>-o matched_output/Signif.csv</span></p>
+<p class="p6"><span class="s2">│ │<span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="s2">│ └────────────────────────────────────────────────────────────────────────────</span></p>
+<p class="p6"><span class="s2">│</span></p>
+<p class="p6"><span class="s2">├─(4) Run srcflux with "user plugin (default)"</span></p>
+<p class="p6"><span class="s2">│ <span class="Apple-converted-space">    </span>Default model is "xspowerlaw.p1" with "p1.PhoIndex=1.7" and "p1.norm=1e-5"</span></p>
+<p class="p6"><span class="s2">│<span class="Apple-converted-space">  </span>&gt; Srcflux [-h] -n "47 Tuc" \</span></p>
+<p class="p6"><span class="s2">│ <span class="Apple-converted-space">                </span>-s matched_output/source_matched_0.5_allout.fits \</span></p>
+<p class="p6"><span class="s2">│ <span class="Apple-converted-space">                </span>-b bkg.reg</span></p>
+<p class="p6"><span class="s2">│<span class="Apple-converted-space">                    </span>│ You need to make a background region file by your self.</span></p>
+<p class="p6"><span class="s2">│<span class="Apple-converted-space">                    </span>│ Because GC envrionment is very crowded, you can't rely</span></p>
+<p class="p6"><span class="s2">│<span class="Apple-converted-space">                    </span>│ on the 'roi' command.</span></p>
+<p class="p6"><span class="s2">│<span class="Apple-converted-space">                    </span>│ One "bkg.reg" will be used for all sources.</span></p>
+<p class="p6"><span class="s2">│<span class="Apple-converted-space">                    </span>└──────────────────────────────────────────────────────────</span></p>
+<p class="p6"><span class="s2">│</span></p>
+<p class="p6"><span class="s2">├─(5) Compile .flux, labels, signifs</span></p>
+<p class="p6"><span class="s2">│<span class="Apple-converted-space">  </span>&gt; mv 231108_1553 (the output directory will be named with datetime)</span></p>
+<p class="p6"><span class="s2">│<span class="Apple-converted-space">  </span>&gt; CompileFlux [-h] -n "47 Tuc" \</span></p>
+<p class="p6"><span class="s2">│ <span class="Apple-converted-space">                    </span>-f fluxes_xspowerlaw.p1/ \</span></p>
+<p class="p6"><span class="s2">│ <span class="Apple-converted-space">                    </span>-m ../matched_output/match_and_all_0.5.csv \</span></p>
+<p class="p6"><span class="s2">│ <span class="Apple-converted-space">                    </span>-s ../matched_output/Signif.csv (only if you chose 3-B)</span></p>
+<p class="p6"><span class="s2">│</span></p>
+<p class="p6"><span class="s2">└─&gt;&gt;&gt; Final output: "DataSet_47Tuc.csv"</span></p>
+<p class="p7"><span class="s2"></span><br></p>
+<p class="p6"><span class="s2">For details of each step, type a flag of "-h".</span></p>
+<p class="p6"><span class="s2">If you want to read "[ PROCEDURE EXAMPLE ]" again in the future, type:</span></p>
+<p class="p6"><span class="s2"><span class="Apple-converted-space"> </span>$ xgmanual</span></p>
+<h3 style="margin: 0.0px 0.0px 14.0px 0.0px; font: 14.0px Times; -webkit-text-stroke: #000000"><span class="s2"><b>References</b></span></h3>
+<p class="p9"><span class="s9">[1] <a href="https://doi.org/10.1117/12.671760"><span class="s10">Fruscione et al. 2006, SPIE Proc. 6270, 62701V, D.R. Silvia &amp; R.E. Doxsey, eds.</span></a></span></p>
+<p class="p9"><span class="s9">[2] <a href="http://adsabs.harvard.edu/full/1996AJ....112.1487H"><span class="s10">Harris, W.E. 1996, AJ, 112, 1487</span></a></span></p>
+</body>
 </html>
