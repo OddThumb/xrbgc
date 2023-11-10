@@ -110,6 +110,6 @@ if (!allout) {
                  addcol = src_labels.match_ind, coldtype = "A10", colname = "source_type")
     cat('└──▶ Matched source list fits file is saved in ', subdirectory,"/\n", sep='')
 } else {
-    cat(paste0('└──▶ Use ',srcfitspath,' for further analysis'))
+    cat(paste0('└──▶ Use ',srcfitspath,' for further analysis\n'))
 }
 
