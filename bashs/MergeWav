@@ -110,7 +110,7 @@ if [ ${reg} == "none" ]; then
     if [ ${arcmin} != "none" ]; then
         echo "├─> Detecting sources in a region with radius of ${arcmin}..."
         FovRegion "${IDorNAME}" "${arcmin}"
-        echo "│> Running dmcopy with fov-${arcmin}.reg..."
+        echo "├─> Running dmcopy with fov-${arcmin}.reg..."
         punlearn dmcopy
         dmcopy "broad_thresh.img[sky=region(fov-${arcmin}.reg)]" broad_image_input.fits
         punlearn dmcopy
@@ -128,7 +128,7 @@ if [ ${reg} == "none" ]; then
 elif [ ${reg} == "r_c" ]; then
     echo "├─> Detecting sources in r_c region..."
     FovRegion "${IDorNAME}" "${reg}"
-    echo "│> Running dmcopy with fov-${reg}.reg..."
+    echo "├─> Running dmcopy with fov-${reg}.reg..."
     punlearn dmcopy
     dmcopy "broad_thresh.img[sky=region(fov-${reg}.reg)]" broad_image_input.fits
     punlearn dmcopy
@@ -139,7 +139,7 @@ elif [ ${reg} == "r_c" ]; then
 elif [ ${reg} == "r_h" ]; then
     echo "├─> Detecting sources in r_h region..."
     FovRegion "${IDorNAME}" "${reg}"
-    echo "│> Running dmcopy with fov-${reg}.reg..."
+    echo "├─> Running dmcopy with fov-${reg}.reg..."
     punlearn dmcopy
     dmcopy "broad_thresh.img[sky=region(fov-${reg}.reg)]" broad_image_input.fits
     punlearn dmcopy
@@ -155,7 +155,7 @@ fi
 
 # Run wavdetect
 mkdir wavdet
-echo "│> Running wavdetect..."
+echo "└> Running wavdetect..."
 punlearn wavdetect
 wavdetect infile=broad_image_input.fits \
     regfile=wavdet/src.reg \
