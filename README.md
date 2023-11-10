@@ -108,7 +108,8 @@ $ xginit -i true -e true
 │    > y
 │
 ├─(2) Merge observations and Do 'wavdetect'
-│    > MergeWav [-h] -n "47 Tuc" -r "r_h"
+│    > MergeWav [-h] -n "47 Tuc"
+│                    -r "r_h" (default)
 │
 ├┬(3) if source type labels are provided, (optional)
 ││    Please MANUALLY prepare a csv file including columns of, at least: "ra, dec, source_type"
@@ -140,16 +141,16 @@ $ xginit -i true -e true
 │ │                -t 0.5 \
 │ │                -w merged/wavdet/source_list.fits \
 │ │                -a TRUE   (including all unknowns)
-│ │ 
-│ │   > GetSigma [-h] -w matched_output/source_matched_0.5_allout.fits \
+│ │
+│ │   > GetSigma [-h] -w merged/wavdet/source_list.fits \
 │ │                   -o matched_output/Signif.csv
-│ │ 
+│ │
 │ └────────────────────────────────────────────────────────────────────────────
 │
 ├─(4) Run srcflux with "user plugin (default)"
 │     Default model is "xspowerlaw.p1" with "p1.PhoIndex=1.7" and "p1.norm=1e-5"
 │  > Srcflux [-h] -n "47 Tuc" \
-│                 -s matched_output/source_matched_0.5_allout.fits \
+│                 -s merged/wavdet/source_list.fits \
 │                 -b bkg.reg
 │                    │ You need to make a background region file by your self.
 │                    │ Because GC envrionment is very crowded, you can't rely
