@@ -2,9 +2,10 @@
 
 # Default value
 reg="r_h"
+arcmin="none"
 
 # Help text
-usage="MergeWav [-h] [-r]
+usage="MergeWav [-h] [-r] [-m]
 where:
     -h Show this help text
     -n Name of GC (e.g. \"47 Tuc\") 
@@ -12,10 +13,12 @@ where:
         r_h : Half-light radius circle region
         r_c : Core radius circle region
         none: Use whole available mosaicked region
+    -m FOV region with given radius (in arcmin).
+       (ONLY when '-r' is 'none')
 "
 
 # Get arguments
-while getopts ":hn:r:" opt; do
+while getopts ":hn:r:m:" opt; do
     case $opt in
         h)  echo "$usage"
             exit 0
@@ -23,6 +26,8 @@ while getopts ":hn:r:" opt; do
         n)  IDorNAME="$OPTARG"
             ;;
         r)  reg="$OPTARG"
+            ;;
+        m)  arcmin="$OPTARG"
             ;;
         :)  printf "missing argument for -%s\n" "$OPTARG" >&2
             echo "$usage" >&2
@@ -102,10 +107,23 @@ merge_obs @evt2.lis merged/ binsize=0.5 psfecf=0.9 psfmerge=expmap
 cd merged/
 
 if [ ${reg} == "none" ]; then
-    echo "├─> Detecting sources in whole region..."
-    cp broad_thresh.img broad_image_input.fits
-    cp broad_thresh.psfmap broad_psfmap_input.fits
-    cp broad_thresh.expmap broad_expmap_input.fits
+    if [ ${arcmin} != "none" ]; then
+        echo "├─> Detecting sources in a region with radius of ${arcmin}..."
+        FovRegion "${IDorNAME}" "${arcmin}"
+        echo "│> Running dmcopy with fov-${arcmin}.reg..."
+        punlearn dmcopy
+        dmcopy "broad_thresh.img[sky=region(fov-${arcmin}.reg)]" broad_image_input.fits
+        punlearn dmcopy
+        dmcopy "broad_thresh.psfmap[sky=region(fov-${arcmin}.reg)]" broad_psfmap_input.fits
+        punlearn dmcopy
+        dmcopy "broad_thresh.expmap[sky=region(fov-${arcmin}.reg)]" broad_expmap_input.fits
+
+    else
+        echo "├─> Detecting sources in whole region..."
+        cp broad_thresh.img broad_image_input.fits
+        cp broad_thresh.psfmap broad_psfmap_input.fits
+        cp broad_thresh.expmap broad_expmap_input.fits
+    fi
 
 elif [ ${reg} == "r_c" ]; then
     echo "├─> Detecting sources in r_c region..."
