@@ -10,11 +10,15 @@ if (length(args)<2) {
 }
 
 # Check input ----
-if (!is.na(as.numeric(r_name))) {
+suppressWarnings({
+    isnumeric <- is.na(as.numeric(r_name))
+})
+if (!isnumeric) {
     by.radius <- TRUE
     radius <- as.numeric(r_name)
+} else {
+    by.radius <- FALSE
 }
-
 
 # Load libraries ----
 package.list <- list("tidyverse", "rlist", "celestial")
