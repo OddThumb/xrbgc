@@ -7,7 +7,8 @@
 │    > y
 │
 ├─(2) Merge observations and Do 'wavdetect'
-│    > MergeWav [-h] -n "47 Tuc" -r "r_h"
+│    > MergeWav [-h] -n "47 Tuc"
+│                    -r "r_h" (default)
 │
 ├┬(3) if source type labels are provided, (optional)
 ││    Please MANUALLY prepare a csv file including columns of, at least: "ra, dec, source_type"
