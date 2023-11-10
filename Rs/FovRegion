@@ -9,6 +9,12 @@ if (length(args)<2) {
         e.g.) $ FovRegion "GC name" "r_h"', call.=FALSE)
 }
 
+# Check input ----
+if (!is.na(as.numeric(r_name))) {
+    by.radius <- TRUE
+    radius <- as.numeric(r_name)
+}
+
 
 # Load libraries ----
 package.list <- list("tidyverse", "rlist", "celestial")
@@ -25,7 +31,10 @@ GCCAT_dir <- system("echo $xrbgc", intern=TRUE)
 GCCAT <- read.csv(paste(GCCAT_dir,"/HarrisCAT/Harris_CAT.csv",sep=''))
 RA_cen <- filter(GCCAT, str_detect(ID, regex(GCname, ignore_case=TRUE))|str_detect(Name, regex(GCname, ignore_case=TRUE)))[,"RA"] %>% as.character()
 DEC_cen <- filter(GCCAT, str_detect(ID, regex(GCname, ignore_case=TRUE))|str_detect(Name, regex(GCname, ignore_case=TRUE)))[,"DEC"] %>% as.character()
-radius <- filter(GCCAT, str_detect(ID, regex(GCname, ignore_case=TRUE))|str_detect(Name, regex(GCname, ignore_case=TRUE)))[,r_name] %>% as.character() %>% as.numeric()
+
+if (!by.radius) {
+    radius <- filter(GCCAT, str_detect(ID, regex(GCname, ignore_case=TRUE))|str_detect(Name, regex(GCname, ignore_case=TRUE)))[,r_name] %>% as.character() %>% as.numeric()
+}
 
 
 # Making a region
