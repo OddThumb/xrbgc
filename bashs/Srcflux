@@ -28,11 +28,11 @@ user_plugin="true"
 #                (0) Input Script Arguments
 # =========================================================
 # Help text
-usage="Srcflux [-h] [-n -s -p -H]
+usage="Srcflux [-h] [-n -w -p -H]
 where:
       -h  Show this help text
       -n  GC name with white space. e.g.) '47 Tuc'
-      -s  Source list FITS file path
+      -w  wavdetect source list FITS file path
       -b  Background region file path
       -p  Parameter index
           |index|  model
@@ -44,15 +44,15 @@ where:
       -u  Whether use user plugin or not (default=${user_plugin})"
 
 # Get arguments
-while getopts ":hn:s:b:e:p:H:c:u:" opt; do
+while getopts ":hn:w:b:e:p:H:c:u:" opt; do
     case $opt in
         h)  echo "$usage"
             exit 0
             ;;
         n)  IDorNAME="$OPTARG"
             ;;
-				s)  srcfile="$OPTARG"
-						;;
+        w)  srcfile="$OPTARG"
+            ;;
         b)  bkgfile="$OPTARG"
             ;;
         p)  paramidx="$OPTARG"
