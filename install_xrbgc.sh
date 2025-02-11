@@ -12,6 +12,15 @@ else
 	echo "export xrbgc_ciao=${ciaopath}" >> ~/.bash_profile
 fi
 echo 'alias xginit="source $xrbgc/xrbgcinit.sh"' >> ~/.bash_profile
+
+if [ -f ~/.Renviron ]; then
+    echo "export xrbgc=$(pwd)" >> ~/.Renviron 
+else
+    echo "WARNING: Please check whether you have R and ~/.Renviron"
+    echo "         The environment variable of 'xrbgc' is registered, anyway"     
+    echo "xrbgc=$(pwd)" >> ~/.Renviron
+fi
+
 echo "[ xrbgc is successfully registered! ]
 CIAO path that will be used: ${ciaopath}
 

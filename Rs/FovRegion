@@ -10,10 +10,7 @@ if (length(args)<2) {
 }
 
 # Check input ----
-suppressWarnings({
-    isnumeric <- is.na(as.numeric(r_name))
-})
-if (!isnumeric) {
+if (is.numeric(r_name)) {
     by.radius <- TRUE
     radius <- as.numeric(r_name)
 } else {
