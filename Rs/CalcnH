@@ -1,5 +1,3 @@
-#!/usr/local/bin/Rscript
-
 # Checking "tidyverse" package is installed
 package.list <- list('tidyverse')
 installed <- unlist(invisible(lapply(package.list, function(pkg) suppressMessages(suppressWarnings(require(pkg, character.only=TRUE, quietly=TRUE))))))

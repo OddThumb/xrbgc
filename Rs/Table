@@ -1,5 +1,3 @@
-#!/usr/local/bin/Rscript
-
 # Input arguments directory ----
 args = commandArgs(trailingOnly=TRUE)
 data.name <- as.character(args[1])

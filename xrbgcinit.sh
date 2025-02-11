@@ -40,18 +40,25 @@ if $init_rm; then
 	rm -rf ~/cxcds_param4
 fi
 
+# where is conda
+if [ -f "$CONDA_PREFIX/etc/profile.d/conda.sh" ]; then
+  source "$CONDA_PREFIX/etc/profile.d/conda.sh"
+elif [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
+  source "$HOME/miniconda3/etc/profile.d/conda.sh"
+elif [ -f "$HOME/anaconda3/etc/profile.d/conda.sh" ]; then
+  source "$HOME/anaconda3/etc/profile.d/conda.sh"
+else
+  echo "Error: conda.sh not found!"
+  exit 1
+fi
+
 # Activate ciao
 conda activate $xrbgc_ciao
 export PATH="$xrbgc:$xrbgc/bashs:$xrbgc/Rs:$xrbgc/Pythons:$PATH"
 
 # CIAO version info
 echo "Reading installed ciao config..."
-ciao_ver=$(${xrbgc_ciao}/bin/ciaover | grep -E '(^|\s)ciao($|\s)')
-ciao_ver=(${ciao_ver})
-ciao_contrib_ver=$(${xrbgc_ciao}/bin/ciaover | grep "ciao-contrib")
-ciao_contrib_ver=(${ciao_contrib_ver})
-caldb_ver=$(${xrbgc_ciao}/bin/ciaover | grep "caldb_main")
-caldb_ver=(${caldb_ver})
+ciao_ver=$(${xrbgc_ciao}/bin/ciaover)
 
 echo "
  ┌──────────────────────────────┐
@@ -61,11 +68,10 @@ echo "
       > Author: Sang In Kim       
       > Date: 08 Nov 2023          
                                    
-     Wrapper scripts for CIAO         
+     Wrapper scripts for CIAO    
+
+$ciao_ver     
                                       
-     CIAO  version: ${ciao_ver[1]} 
-     ciao_contrib : ${ciao_contrib_ver[1]} 
-     CALDB version: ${caldb_ver[1]} 
                                  
     Ref: Fruscione et al.(2006)  
  └──────────────────────────────┘

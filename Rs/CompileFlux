@@ -1,5 +1,3 @@
-#!/usr/local/bin/Rscript
-
 # Input arguments directory ----
 if (!suppressMessages(suppressWarnings(require('argparse', character.only=TRUE, quietly=TRUE)))) {
     install.packages('argparse')

@@ -1,4 +1,3 @@
-#!/usr/local/bin/Rscript
 # Suppress Warnings
 options(warn=-1)
 
