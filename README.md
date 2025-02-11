@@ -83,20 +83,23 @@ bash install_xrbgc.sh
 
 ```bash
 $ xginit -i true -e true
+Reading installed ciao config...
+
  ┌──────────────────────────────┐
- │                              │
- │        xrbgc (v1.0.0)        │
- │                              │
- │    > Author: Sang In Kim     │
- │    > Date: 08 Nov 2023       │
- │                              │
- │   Wrapper scripts for CIAO   │
- │                              │
- │   CIAO  version: 4.15.1      │
- │   ciao_contrib : 4.15.1      │
- │   CALDB version: 4.10.2      │
- │                              │
- │  Ref: Fruscione et al.(2006) │
+
+          xrbgc (v1.0.0)
+
+      > Author: Sang In Kim
+      > Date: 08 Nov 2023
+
+     Wrapper scripts for CIAO
+
+CIAO 4.16.0 Tuesday, December 05, 2023
+  bindir      : /home/kim/miniconda3/envs/ciao-4.17/bin
+  CALDB       : 4.12.0
+
+
+    Ref: Fruscione et al.(2006)
  └──────────────────────────────┘
 
 [ PROCEDURE EXAMPLE ]
@@ -106,10 +109,15 @@ $ xginit -i true -e true
 ├─(1) Reprocessing all ObsIDs in current directory
 │    > Reprocessing
 │    > y
+|    *Note: This script aims for analyzing ACIS data without grating.
+|           If there is any data including 'non-ACIS' or grating, this
+|           script will be stuck.
 │
 ├─(2) Merge observations and Do 'wavdetect'
 │    > MergeWav [-h] -n "47 Tuc"
 │                    -r "r_h" (default)
+|     If specific radius (e.g. 2 arcmin) needs to be given,
+|    > MergeWav -n "47 Tuc" -r none -m 2
 │
 ├┬(3) if source type labels are provided, (optional)
 ││    Please MANUALLY prepare a csv file including columns of, at least: "ra, dec, source_type"
@@ -166,21 +174,3 @@ $ xginit -i true -e true
 │                     -s ../matched_output/Signif.csv (only if you chose 3-B)
 │
 └─>>> Final output: "DataSet_47Tuc.csv"
-
-For details of each step, type a flag of "-h".
-If you want to read "[ PROCEDURE EXAMPLE ]" again in the future, type:
- $ xgmanual
-```
-
-
-
-
-
-### References
-[1] [Fruscione et al. 2006, SPIE Proc. 6270, 62701V, D.R. Silvia & R.E. Doxsey, eds.](https://doi.org/10.1117/12.671760)
-
-[2] [Harris, W.E. 1996, AJ, 112, 1487](http://adsabs.harvard.edu/full/1996AJ....112.1487H)
-
-
-
-
